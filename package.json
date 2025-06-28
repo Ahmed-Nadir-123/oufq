@@ -1,0 +1,23 @@
+{
+  "name": "oufq-business-management",
+  "version": "1.0.0",
+  "description": "Arabic Business Management System - نظام إدارة الأعمال باللغة العربية",
+  "main": "login.html",
+  "scripts": {
+    "dev": "npx serve .",
+    "build": "echo 'Static site - no build required'",
+    "start": "npx serve ."
+  },
+  "keywords": [
+    "business-management",
+    "arabic",
+    "rtl",
+    "dashboard",
+    "financial-management"
+  ],
+  "author": "OUFQ Team",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}

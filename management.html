@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أُفُق - الإدارة</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #1E293B;
+            --primary-orange: #D97706;
+            --secondary-orange: #D9882E;
+            --accent-blue: #344663;
+            --light-orange: #D89955;
+            --medium-blue: #49648A;
+            --pale-orange: #D8AA7D;
+            --soft-blue: #5F81B2;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --border-gray: #e9ecef;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #ffffff 100%);
+            min-height: 100vh;
+            color: var(--primary-dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 5px 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo img {
+            width: 150px;
+            height: auto;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn, .back-btn {
+            padding: 10px 20px;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: var(--primary-orange);
+        }
+
+        .back-btn {
+            background: var(--accent-blue);
+        }
+
+        .subsection {
+            background: white;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .subsection-header {
+            background: linear-gradient(135deg, var(--primary-orange) 0%, var(--secondary-orange) 100%);
+            color: white;
+            padding: 20px;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        th {
+            background: var(--light-gray);
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        tr:hover {
+            background: rgba(217, 119, 6, 0.05);
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .btn-primary {
+            background: var(--primary-orange);
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-info {
+            background: var(--soft-blue);
+            color: white;
+        }
+
+        .status-paid {
+            background: #28a745;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .status-installment {
+            background: var(--primary-orange);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .header-logo {
+                width: 100% !important;
+                justify-content: center;
+            }
+
+            .header-logo img {
+                width: 180px !important;
+            }
+
+            .header-title {
+                font-size: 20px;
+                order: 2;
+            }
+
+            .user-info {
+                flex-direction: row !important;
+                gap: 10px;
+                width: 100%;
+                justify-content: center;
+                order: 3;
+                align-items: center;
+            }
+
+            .table-container {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px 4px;
+                font-size: 11px;
+            }
+
+            .status-paid, .status-installment {
+                font-size: 10px;
+                padding: 2px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-logo" style="display:flex; align-items:center; gap:12px; width:280px; height:110px; overflow:hidden;">
+                <img src="iconWithArabic.svg" alt="OFOQ Logo" style="width:220px; height:auto;" />
+            </div>
+            <div class="header-title">
+                <i class="fas fa-users-cog"></i> الإدارة
+            </div>
+            <div class="user-info">
+                <span id="welcomeUser">مرحباً، </span>
+                <button class="back-btn" onclick="goToDashboard()">
+                    <i class="fas fa-arrow-right"></i> العودة للرئيسية
+                </button>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                </button>
+            </div>
+        </div>
+
+        <!-- Business Data -->
+        <div class="subsection">
+            <div class="subsection-header">
+                <i class="fas fa-building"></i> بيانات الأعمال
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم المشروع/القسم</th>
+                            <th>الصورة</th>
+                            <th>تاريخ البداية</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>مشروع التطوير الرقمي</td>
+                            <td><i class="fas fa-image" style="color: var(--primary-orange);"></i></td>
+                            <td>2024-01-15</td>
+                            <td><span class="status-paid">نشط</span></td>
+                            <td><button class="btn btn-info">عرض التفاصيل</button></td>
+                        </tr>
+                        <tr>
+                            <td>قسم المبيعات</td>
+                            <td><i class="fas fa-image" style="color: var(--primary-orange);"></i></td>
+                            <td>2024-02-01</td>
+                            <td><span class="status-paid">نشط</span></td>
+                            <td><button class="btn btn-info">عرض التفاصيل</button></td>
+                        </tr>
+                        <tr>
+                            <td>مشروع التسويق الإلكتروني</td>
+                            <td><i class="fas fa-image" style="color: var(--primary-orange);"></i></td>
+                            <td>2024-03-10</td>
+                            <td><span class="status-installment">قيد التطوير</span></td>
+                            <td><button class="btn btn-info">عرض التفاصيل</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Salary Transfer -->
+        <div class="subsection">
+            <div class="subsection-header">
+                <i class="fas fa-money-bill-transfer"></i> تحويل الرواتب
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اسم الموظف</th>
+                            <th>مبلغ الراتب</th>
+                            <th>طريقة التحويل</th>
+                            <th>الحالة</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>أحمد محمد</td>
+                            <td>5,000 ريال</td>
+                            <td>
+                                <select class="form-control">
+                                    <option>بنكي</option>
+                                    <option>حوالة</option>
+                                    <option>نقدي</option>
+                                </select>
+                            </td>
+                            <td><span class="status-paid">مُحول</span></td>
+                            <td><button class="btn btn-success">تحويل</button></td>
+                        </tr>
+                        <tr>
+                            <td>فاطمة علي</td>
+                            <td>4,500 ريال</td>
+                            <td>
+                                <select class="form-control">
+                                    <option>بنكي</option>
+                                    <option>حوالة</option>
+                                    <option>نقدي</option>
+                                </select>
+                            </td>
+                            <td><span class="status-installment">معلق</span></td>
+                            <td><button class="btn btn-primary">تحويل</button></td>
+                        </tr>
+                        <tr>
+                            <td>محمد سالم</td>
+                            <td>5,500 ريال</td>
+                            <td>
+                                <select class="form-control">
+                                    <option>بنكي</option>
+                                    <option>حوالة</option>
+                                    <option>نقدي</option>
+                                </select>
+                            </td>
+                            <td><span class="status-installment">معلق</span></td>
+                            <td><button class="btn btn-primary">تحويل</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        window.addEventListener('load', function() {
+            const username = localStorage.getItem('username');
+            if (!username) {
+                window.location.href = 'login.html';
+                return;
+            }
+            document.getElementById('welcomeUser').textContent = 'مرحباً، ' + username;
+        });
+
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('username');
+            window.location.href = 'login.html';
+        }
+
+        // Add interactive functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers for transfer buttons
+            document.querySelectorAll('.btn-primary, .btn-success').forEach(btn => {
+                if (btn.textContent.includes('تحويل')) {
+                    btn.addEventListener('click', function() {
+                        if (confirm('هل أنت متأكد من تحويل الراتب؟')) {
+                            this.textContent = 'تم التحويل';
+                            this.classList.remove('btn-primary');
+                            this.classList.add('btn-success');
+                            this.disabled = true;
+
+                            // Update status
+                            const statusCell = this.closest('tr').querySelector('.status-installment');
+                            if (statusCell) {
+                                statusCell.textContent = 'مُحول';
+                                statusCell.classList.remove('status-installment');
+                                statusCell.classList.add('status-paid');
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

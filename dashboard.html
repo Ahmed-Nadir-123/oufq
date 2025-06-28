@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أُفُق - الرئيسية</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #1E293B;
+            --primary-orange: #D97706;
+            --secondary-orange: #D9882E;
+            --accent-blue: #344663;
+            --light-orange: #D89955;
+            --medium-blue: #49648A;
+            --pale-orange: #D8AA7D;
+            --soft-blue: #5F81B2;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --border-gray: #e9ecef;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #ffffff 100%);
+            min-height: 100vh;
+            color: var(--primary-dark);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 5px 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo img {
+            width: 150px;
+            height: auto;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logout-btn {
+            padding: 10px 20px;
+            background: var(--primary-orange);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+        }
+
+        .main-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .option-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+            border-color: var(--primary-orange);
+        }
+
+        .option-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--primary-orange);
+        }
+
+        .option-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+
+        .option-description {
+            color: var(--accent-blue);
+            font-size: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header {
+                flex-direction: column;
+                text-align: center;
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .header-logo {
+                width: 100% !important;
+                justify-content: center;
+            }
+
+            .header-logo img {
+                width: 180px !important;
+            }
+
+            .header-title {
+                font-size: 20px;
+                order: 2;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: center;
+                flex-direction: row !important;
+                gap: 10px;
+                order: 3;
+                align-items: center;
+            }
+
+            .main-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-logo" style="display:flex; align-items:center; gap:12px; width:280px; height:110px; overflow:hidden;">
+                <img src="iconWithArabic.svg" alt="OFOQ Logo" style="width:220px; height:auto;" />
+            </div>
+            <div class="header-title">نظام إدارة الأعمال</div>
+            <div class="user-info">
+                <span id="welcomeUser">مرحباً، </span>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                </button>
+            </div>
+        </div>
+
+        <div class="main-options">
+            <div class="option-card" onclick="goToManagement()">
+                <div class="option-icon">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <div class="option-title">الإدارة</div>
+                <div class="option-description">إدارة بيانات الأعمال وتحويل الرواتب</div>
+            </div>
+            <div class="option-card" onclick="goToFinancial()">
+                <div class="option-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="option-title">الإدارة المالية</div>
+                <div class="option-description">المخزون، المبيعات، والفواتير</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        window.addEventListener('load', function() {
+            const username = localStorage.getItem('username');
+            if (!username) {
+                window.location.href = 'login.html';
+                return;
+            }
+            document.getElementById('welcomeUser').textContent = 'مرحباً، ' + username;
+        });
+
+        function goToManagement() {
+            window.location.href = 'management.html';
+        }
+
+        function goToFinancial() {
+            window.location.href = 'financial.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('username');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>
