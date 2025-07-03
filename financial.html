@@ -41,6 +41,14 @@
             padding: 20px;
         }
 
+        .header-buttom{
+            padding: 5px 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center; 
+        }
+
         .header {
             background: white;
             padding: 5px 20px;
@@ -48,7 +56,27 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.08);
             margin-bottom: 30px;
             display: flex;
+            flex-direction: column;
             justify-content: space-between;
+            align-items: center;
+        }
+        .header-logo-official{
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            gap: 40px;
+            padding: 20px;
+            flex-wrap: nowrap;
+        }
+        .header-logo-official img{
+            width: 150px;
+            height: auto;
+            max-width: 100%;
+        }
+        
+        .header-logo-official div {
+            display: flex;
+            gap: 10px;
             align-items: center;
         }
 
@@ -67,6 +95,7 @@
             font-size: 24px;
             font-weight: 700;
             color: var(--primary-dark);
+            margin: auto 10px;
         }
 
         .user-info {
@@ -206,7 +235,31 @@
                 padding: 10px;
             }
 
-            .header {
+            .header-logo-official {
+                flex-direction: row;
+                gap: 40px;
+                padding: 10px;
+                justify-content: center;
+            }
+
+            .header-logo-official img {
+                width: 60px;
+                height: 60px;
+                border-radius: 50%;
+            }
+
+            .header-logo-official div {
+                flex-direction: row;
+                gap: 8px;
+            }
+
+            .header-logo-official div img {
+                width: 60px !important;
+                height: 60px !important;
+                border-radius: 50%;
+            }
+
+            .header-buttom {
                 flex-direction: column;
                 text-align: center;
                 padding: 15px;
@@ -240,16 +293,34 @@
                 align-items: center;
             }
         }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            /* iPad/Tablet layout */
+            .user-info {
+                justify-content: space-between;
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
+            <div class="header-logo-official">
+                <img src="Oman-Chamber-of-Commerce-and-Industry.png" alt="Oman-Chamber-of-Commerce-and-Industry">
+                <div>
+                    <img src="SultanHaitham.jpg" style="border-radius: 50%; width: 150px;height: 145px; border: solid black 3px;" alt="SultanHaitham">
+                    <img src="SultanKaboos.jpeg" alt="SultanKaboos"  style="border-radius: 50%; width: 150px;height: 145px; border: solid black 3px;">
+                </div>
+                <img src="OmanVision.webp" alt="OmanVision">
+                
+            </div>
+            <div class="header-buttom">
             <div class="header-logo" style="display:flex; align-items:center; gap:12px; width:280px; height:110px; overflow:hidden;">
                 <img src="iconWithArabic.svg" alt="OFOQ Logo" style="width:220px; height:auto;" />
             </div>
             <div class="header-title">
-                <i class="fas fa-chart-line"></i> الإدارة المالية
+                <i class="fas fa-chart-line"></i> المحاسبة
             </div>
             <div class="user-info">
                 <span id="welcomeUser">مرحباً، </span>
@@ -259,6 +330,7 @@
                 <button class="logout-btn" onclick="logout()">
                     <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
                 </button>
+            </div>
             </div>
         </div>
 
