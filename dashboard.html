@@ -41,14 +41,6 @@
             padding: 20px;
         }
 
-        .header-buttom{
-            padding: 5px 20px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center; 
-        }
-
         .header {
             background: white;
             padding: 5px 20px;
@@ -57,27 +49,7 @@
             margin-bottom: 30px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .header-logo-official{
-            display: flex;
-            justify-content: space-evenly;
-            align-items: center;
-            gap: 40px;
-            padding: 20px;
-            flex-wrap: nowrap;
-        }
-        .header-logo-official img{
-            width: 150px;
-            height: auto;
-            max-width: 100%;
-        }
-        
-        .header-logo-official div {
-            display: flex;
-            gap: 10px;
-            align-items: center;
+            align-items: stretch;
         }
 
         .header-logo {
@@ -95,7 +67,6 @@
             font-size: 24px;
             font-weight: 700;
             color: var(--primary-dark);
-            margin: auto 10px;
         }
 
         .user-info {
@@ -157,61 +128,40 @@
             font-size: 16px;
         }
 
+        /* Responsive styles for new header layout */
+        @media (max-width: 768px) {
+            .header-images-row {
+                flex-direction: column !important;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .header-info-row {
+                flex-direction: column !important;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .header-info-row > div {
+                width: 100%;
+                justify-content: center !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header-images-row img {
+                width: 80px !important;
+                height: 80px !important;
+            }
+            
+            .header-info-row span {
+                font-size: 14px !important;
+            }
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 10px;
-            }
-
-            .header-logo-official {
-                flex-direction: row;
-                gap: 40px;
-                padding: 10px;
-                justify-content: center;
-            }
-
-            .header-logo-official img {
-                width: 60px;
-                height: 60px;
-                border-radius: 50%;
-            }
-
-            .header-logo-official div {
-                flex-direction: row;
-                gap: 8px;
-            }
-
-            .header-logo-official div img {
-                width: 60px !important;
-                height: 60px !important;
-                border-radius: 50%;
-            }
-
-            .header-buttom {
-                flex-direction: column;
-                text-align: center;
-                padding: 15px;
-                gap: 15px;
-            }
-
-            .header-logo {
-                width: 100% !important;
-                justify-content: center;
-            }
-
-            .header-logo img {
-                width: 180px !important;
-            }
-
-            .header-title {
-                font-size: 20px;
-            }
-
-            .user-info {
-                width: 100%;
-                justify-content: center;
-                flex-direction: row !important;
-                gap: 10px;
-                align-items: center;
             }
 
             .main-options {
@@ -222,45 +172,91 @@
 </head>
 <body>
     <div class="container">
-        
         <div class="header">
-            <div class="header-logo-official">
-                <img src="Oman-Chamber-of-Commerce-and-Industry.png" alt="Oman-Chamber-of-Commerce-and-Industry">
-                <div>
-                    <img src="SultanHaitham.jpg" style="border-radius: 50%; width: 150px;height: 145px; border: solid black 3px;" alt="SultanHaitham">
-                    <img src="SultanKaboos.jpeg" alt="SultanKaboos"  style="border-radius: 50%; width: 150px;height: 145px; border: solid black 3px;">
+            <!-- First Section: Official Images Row -->
+            <div class="header-images-row" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #e9ecef;">
+                <!-- Left: Oman Vision Logo -->
+                <div style="display: flex; align-items: center;">
+                    <img src="OmanVision.webp" alt="Oman Vision 2040" style="width: 140px; height: auto;">
                 </div>
-                <img src="OmanVision.webp" alt="OmanVision">
-                
+
+                <!-- Center: Sultan Images -->
+                <div style="display: flex; gap: 20px; align-items: center;">
+                    <img src="2.jpg" alt="Sultan Haitham" style="border-radius: 50%; width: 100px; height: 100px; border: solid #1E293B 3px;">
+                    <img src="HM_Sultan_Qaboos.jpg" alt="Sultan Kaboos" style="border-radius: 50%; width: 100px; height: 100px; border: solid #1E293B 3px;">
+                </div>
+
+                <!-- Right: Chamber Logo -->
+                <div style="display: flex; align-items: center;">
+                    <img src="Oman-Chamber-of-Commerce-and-Industry.png" alt="Chamber Logo" style="width: 120px; height: auto;">
+                </div>
             </div>
-            <div class="header-buttom">
-            <div class="header-logo" style="display:flex; align-items:center; gap:12px; width:280px; height:110px; overflow:hidden;">
-                <img src="iconWithArabic.svg" alt="OFOQ Logo" style="width:220px; height:auto;" />
-            </div>
-            <div class="header-title">نظام إدارة الأعمال</div>
-            <div class="user-info">
-                <span id="welcomeUser">مرحباً، </span>
-                <button class="logout-btn" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
-                </button>
-            </div>
+
+            <!-- Second Section: Logo and Contact Info Row -->
+            <div class="header-info-row" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;">
+                <!-- Left: OFOQ Logo -->
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <img src="iconWithArabic (2).svg" alt="OFOQ Logo" style="width: 80px; height: auto;">
+                </div>
+
+                <!-- Center: Address Info -->
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 12px; font-weight: 600; color: #1E293B; margin-bottom: 2px;">شارع غلا</div>
+                        <div style="font-size: 14px; font-weight: 700; color: #1E293B;">مسقط، عُمان</div>
+                    </div>
+                    <span style="background: #f8f9fa; border-radius: 50%; padding: 8px; margin-left: 8px;">
+                        <i class="fa fa-home" style="color: #D97706; font-size: 18px;"></i>
+                    </span>
+                </div>
+
+                <!-- Center-Right: Working Hours -->
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 12px; font-weight: 600; color: #1E293B; margin-bottom: 2px;">الأحد - الخميس</div>
+                        <div style="font-size: 14px; font-weight: 700; color: #1E293B;">9 صباحاً - 6 مساءً</div>
+                    </div>
+                    <span style="background: #f8f9fa; border-radius: 50%; padding: 8px; margin-left: 8px;">
+                        <i class="fa fa-clock" style="color: #D97706; font-size: 18px;"></i>
+                    </span>
+                </div>
+
+                <!-- Right: Contact Info & Logout -->
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 12px; font-weight: 600; color: #1E293B; margin-bottom: 2px;">اتصل بنا الآن</div>
+                            <div style="font-size: 14px; font-weight: 700; color: #1E293B;">+968 98765432</div>
+                        </div>
+                        <span style="background: #f8f9fa; border-radius: 50%; padding: 8px; margin-left: 8px;">
+                            <i class="fa fa-phone" style="color: #D97706; font-size: 18px;"></i>
+                        </span>
+                    </div>
+                    <div class="user-info" style="display: flex; align-items: center; gap: 10px;">
+                        <span id="welcomeUser" style="font-size: 14px; color: #1E293B;">مرحباً، </span>
+                        <button class="logout-btn" onclick="logout()" style="padding: 8px 16px; background: var(--primary-orange); color: white; border: none; border-radius: 8px; cursor: pointer; font-family: 'Cairo', sans-serif; font-weight: 600;">
+                            <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="main-options">
             <div class="option-card" onclick="goToManagement()">
                 <div class="option-icon">
-                    <i class="fas fa-users-cog"></i>
+                    <i class="fas fa-users"></i>
                 </div>
-                <div class="option-title">الموارد البشرية</div>
-                <div class="option-description">إدارة بيانات الأعمال وتحويل الرواتب</div>
+                <h3 class="option-title">الموارد البشرية</h3>
+                <p class="option-description">إدارة شؤون الموظفين والرواتب والحضور والانصراف</p>
             </div>
+
             <div class="option-card" onclick="goToFinancial()">
                 <div class="option-icon">
-                    <i class="fas fa-chart-line"></i>
+                    <i class="fas fa-calculator"></i>
                 </div>
-                <div class="option-title">المحاسبة</div>
-                <div class="option-description">المخزون، المبيعات، والفواتير</div>
+                <h3 class="option-title">المحاسبة</h3>
+                <p class="option-description">إدارة الحسابات والفواتير والتقارير المالية</p>
             </div>
         </div>
     </div>
