@@ -242,47 +242,175 @@
             </div>
         </div>
 
-        <div class="main-options">
-            <div class="option-card" onclick="goToManagement()">
-                <div class="option-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <h3 class="option-title">الموارد البشرية</h3>
-                <p class="option-description">إدارة شؤون الموظفين والرواتب والحضور والانصراف</p>
-            </div>
-
-            <div class="option-card" onclick="goToFinancial()">
-                <div class="option-icon">
-                    <i class="fas fa-calculator"></i>
-                </div>
-                <h3 class="option-title">المحاسبة</h3>
-                <p class="option-description">إدارة الحسابات والفواتير والتقارير المالية</p>
-            </div>
+        <div class="main-options" id="servicesContainer">
+            <!-- Services will be dynamically loaded based on company's activated services -->
+            <div class="loading-message">جاري تحميل الخدمات المتاحة...</div>
         </div>
     </div>
 
-    <script>
-        // Check if user is logged in
-        window.addEventListener('load', function() {
-            const username = localStorage.getItem('username');
-            if (!username) {
+    <script type="module">
+        import { SupabaseAuth, CompanyData } from './js/supabase.js';
+
+        const auth = new SupabaseAuth();
+        const companyData = new CompanyData();
+        let currentUser = null;
+        let companyInfo = null;
+
+        // Service definitions
+        const availableServices = {
+            hr: {
+                title: 'الموارد البشرية',
+                description: 'إدارة شؤون الموظفين والرواتب والحضور والانصراف',
+                icon: 'fas fa-users',
+                action: 'goToManagement'
+            },
+            inventory: {
+                title: 'إدارة المخزون',
+                description: 'تتبع المواد والبضائع والمخزون',
+                icon: 'fas fa-boxes',
+                action: 'goToInventory'
+            },
+            sales: {
+                title: 'المبيعات',
+                description: 'إدارة عمليات البيع والعملاء',
+                icon: 'fas fa-chart-line',
+                action: 'goToSales'
+            },
+            invoices: {
+                title: 'الفواتير',
+                description: 'إنشاء وإدارة الفواتير والحسابات',
+                icon: 'fas fa-file-invoice',
+                action: 'goToFinancial'
+            }
+        };
+
+        // Initialize dashboard
+        window.addEventListener('load', async function() {
+            // Check authentication
+            currentUser = await auth.getCurrentUser();
+            if (!currentUser) {
                 window.location.href = 'login.html';
                 return;
             }
-            document.getElementById('welcomeUser').textContent = 'مرحباً، ' + username;
+
+            // Verify user role
+            const userRole = await auth.getUserRole();
+            if (userRole !== 'company') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Load company information
+            try {
+                companyInfo = await companyData.getCompanyInfo();
+                if (companyInfo) {
+                    document.getElementById('welcomeUser').textContent = 'مرحباً، ' + companyInfo.name;
+                    await loadActivatedServices();
+                } else {
+                    showError('خطأ في تحميل بيانات الشركة');
+                }
+            } catch (error) {
+                console.error('Load company info error:', error);
+                showError('حدث خطأ في تحميل البيانات');
+            }
         });
 
-        function goToManagement() {
-            window.location.href = 'management.html';
+        // Load activated services for company
+        async function loadActivatedServices() {
+            const servicesContainer = document.getElementById('servicesContainer');
+            
+            if (!companyInfo.active_services || companyInfo.active_services.length === 0) {
+                servicesContainer.innerHTML = `
+                    <div class="no-services-message" style="text-align: center; padding: 40px; color: #666;">
+                        <i class="fas fa-info-circle" style="font-size: 48px; margin-bottom: 20px; color: #ddd;"></i>
+                        <h3>لا توجد خدمات مفعلة</h3>
+                        <p>يرجى الاتصال بالإدارة لتفعيل الخدمات المطلوبة</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let servicesHtml = '';
+            companyInfo.active_services.forEach(serviceKey => {
+                if (availableServices[serviceKey]) {
+                    const service = availableServices[serviceKey];
+                    servicesHtml += `
+                        <div class="option-card" onclick="${service.action}()">
+                            <div class="option-icon">
+                                <i class="${service.icon}"></i>
+                            </div>
+                            <h3 class="option-title">${service.title}</h3>
+                            <p class="option-description">${service.description}</p>
+                        </div>
+                    `;
+                }
+            });
+
+            servicesContainer.innerHTML = servicesHtml;
         }
 
-        function goToFinancial() {
-            window.location.href = 'financial.html';
+        // Navigation functions
+        window.goToManagement = function() {
+            if (hasService('hr')) {
+                window.location.href = 'management.html';
+            } else {
+                alert('هذه الخدمة غير مفعلة لشركتكم');
+            }
+        };
+
+        window.goToFinancial = function() {
+            if (hasService('invoices')) {
+                window.location.href = 'financial.html';
+            } else {
+                alert('هذه الخدمة غير مفعلة لشركتكم');
+            }
+        };
+
+        window.goToInventory = function() {
+            if (hasService('inventory')) {
+                // Create inventory page or redirect to existing one
+                alert('صفحة المخزون قيد التطوير');
+            } else {
+                alert('هذه الخدمة غير مفعلة لشركتكم');
+            }
+        };
+
+        window.goToSales = function() {
+            if (hasService('sales')) {
+                // Create sales page or redirect to existing one
+                alert('صفحة المبيعات قيد التطوير');
+            } else {
+                alert('هذه الخدمة غير مفعلة لشركتكم');
+            }
+        };
+
+        // Check if company has specific service
+        function hasService(serviceKey) {
+            return companyInfo && companyInfo.active_services && 
+                   companyInfo.active_services.includes(serviceKey);
         }
 
-        function logout() {
-            localStorage.removeItem('username');
-            window.location.href = 'login.html';
+        // Logout function
+        window.logout = async function() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                await auth.signOut();
+                window.location.href = 'login.html';
+            }
+        };
+
+        // Error handling
+        function showError(message) {
+            const servicesContainer = document.getElementById('servicesContainer');
+            servicesContainer.innerHTML = `
+                <div class="error-message" style="text-align: center; padding: 40px; color: #dc3545;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 20px;"></i>
+                    <h3>حدث خطأ</h3>
+                    <p>${message}</p>
+                    <button onclick="location.reload()" style="margin-top: 15px; padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                        إعادة المحاولة
+                    </button>
+                </div>
+            `;
         }
     </script>
 </body>

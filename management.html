@@ -400,25 +400,60 @@
         </div>
     </div>
 
-    <script>
-        // Check if user is logged in
-        window.addEventListener('load', function() {
-            const username = localStorage.getItem('username');
-            if (!username) {
+    <script type="module">
+        import { SupabaseAuth, CompanyData } from './js/supabase.js';
+
+        const auth = new SupabaseAuth();
+        const companyData = new CompanyData();
+        let currentUser = null;
+        let companyInfo = null;
+
+        // Initialize page
+        window.addEventListener('load', async function() {
+            // Check authentication
+            currentUser = await auth.getCurrentUser();
+            if (!currentUser) {
                 window.location.href = 'login.html';
                 return;
             }
-            document.getElementById('welcomeUser').textContent = 'مرحباً، ' + username;
+
+            // Verify user role
+            const userRole = await auth.getUserRole();
+            if (userRole !== 'company') {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            // Check if HR service is activated
+            try {
+                companyInfo = await companyData.getCompanyInfo();
+                if (!companyInfo || !companyInfo.active_services.includes('hr')) {
+                    alert('خدمة الموارد البشرية غير مفعلة لشركتكم');
+                    window.location.href = 'dashboard.html';
+                    return;
+                }
+                
+                document.getElementById('welcomeUser').textContent = 'مرحباً، ' + companyInfo.name;
+            } catch (error) {
+                console.error('Load company info error:', error);
+                alert('حدث خطأ في تحميل بيانات الشركة');
+                window.location.href = 'dashboard.html';
+            }
         });
 
         function goToDashboard() {
             window.location.href = 'dashboard.html';
         }
 
-        function logout() {
-            localStorage.removeItem('username');
-            window.location.href = 'login.html';
+        async function logout() {
+            if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+                await auth.signOut();
+                window.location.href = 'login.html';
+            }
         }
+
+        // Make logout function global
+        window.logout = logout;
 
         // Add interactive functionality
         document.addEventListener('DOMContentLoaded', function() {

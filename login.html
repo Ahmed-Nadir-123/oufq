@@ -134,8 +134,8 @@
             </div>
             <form id="loginForm">
                 <div class="form-group">
-                    <label for="username">اسم المستخدم</label>
-                    <input type="text" id="username" name="username" required>
+                    <label for="username">البريد الإلكتروني</label>
+                    <input type="email" id="username" name="username" required>
                 </div>
                 <div class="form-group">
                     <label for="password">الرقم السري</label>
@@ -148,20 +148,111 @@
         </div>
     </div>
 
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+    <script type="module">
+        import { SupabaseAuth } from './js/supabase.js';
+
+        const auth = new SupabaseAuth();
+        
+        // Display loading state
+        function showLoading(show) {
+            const btn = document.querySelector('.login-btn');
+            const icon = btn.querySelector('i');
+            
+            if (show) {
+                btn.disabled = true;
+                icon.className = 'fas fa-spinner fa-spin';
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التسجيل...';
+            } else {
+                btn.disabled = false;
+                icon.className = 'fas fa-sign-in-alt';
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            // Remove existing error if any
+            const existingError = document.querySelector('.error-message');
+            if (existingError) {
+                existingError.remove();
+            }
+            
+            // Create new error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.style.cssText = `
+                background-color: #fee;
+                color: #c33;
+                padding: 10px;
+                border-radius: 5px;
+                margin-bottom: 15px;
+                text-align: center;
+                border: 1px solid #fcc;
+            `;
+            errorDiv.textContent = message;
+            
+            const form = document.getElementById('loginForm');
+            form.insertBefore(errorDiv, form.firstChild);
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const username = document.getElementById('username').value;
+            const email = document.getElementById('username').value;
             const password = document.getElementById('password').value;
 
-            // Simple validation (in real app, this would be server-side)
-            if (username && password) {
-                // Store username in localStorage to pass to dashboard
-                localStorage.setItem('username', username);
-                // Redirect to dashboard
-                window.location.href = 'dashboard.html';
-            } else {
-                alert('يرجى إدخال اسم المستخدم والرقم السري');
+            if (!email || !password) {
+                showError('يرجى إدخال البريد الإلكتروني والرقم السري');
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                // Attempt login with Supabase
+                const { user, session, error } = await auth.signIn(email, password);
+                
+                if (error) {
+                    if (error.message.includes('Invalid login credentials')) {
+                        showError('البريد الإلكتروني أو كلمة المرور غير صحيحة');
+                    } else if (error.message.includes('Email not confirmed')) {
+                        showError('يرجى تأكيد البريد الإلكتروني أولاً');
+                    } else {
+                        showError('حدث خطأ في تسجيل الدخول. يرجى المحاولة مرة أخرى');
+                    }
+                    return;
+                }
+
+                // Get user role and redirect accordingly
+                const userRole = await auth.getUserRole();
+                
+                if (userRole === 'admin') {
+                    // Redirect to admin dashboard
+                    window.location.href = 'admin-dashboard.html';
+                } else if (userRole === 'company') {
+                    // Redirect to company dashboard
+                    window.location.href = 'dashboard.html';
+                } else {
+                    showError('نوع المستخدم غير محدد. يرجى الاتصال بالدعم الفني');
+                }
+                
+            } catch (error) {
+                console.error('Login error:', error);
+                showError('حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى');
+            } finally {
+                showLoading(false);
+            }
+        });
+
+        // Check if user is already logged in
+        window.addEventListener('load', async function() {
+            const currentUser = await auth.getCurrentUser();
+            if (currentUser) {
+                const userRole = await auth.getUserRole();
+                if (userRole === 'admin') {
+                    window.location.href = 'admin-dashboard.html';
+                } else if (userRole === 'company') {
+                    window.location.href = 'dashboard.html';
+                }
             }
         });
     </script>
