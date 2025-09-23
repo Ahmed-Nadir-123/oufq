@@ -1,9 +1,9 @@
 // إعدادات Supabase
-const SUPABASE_URL = 'YOUR_SUPABASE_URL'; // استبدل بـ URL الخاص بمشروعك
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY'; // استبدل بالمفتاح العام
+const SUPABASE_URL = 'https://wlnukwaecpkhxomfgxni.supabase.co'; // استبدل بـ URL الخاص بمشروعك
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsbnVrd2FlY3BraHhvbWZneG5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2NDc4MjEsImV4cCI6MjA3NDIyMzgyMX0.PW3GVs3l15oBIa8rS86offziTFkSVefj5OFUc6XRmoA'; // استبدل بالمفتاح العام
 
-// تهيئة عميل Supabase
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// تصدير المتغيرات للاستخدام في ملفات أخرى
+export { SUPABASE_URL, SUPABASE_ANON_KEY };
 
 /**
  * خدمات المصادقة
