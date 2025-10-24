@@ -161,6 +161,11 @@
             color: white;
         }
 
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
         .status-paid {
             background: #28a745;
             color: white;
@@ -295,151 +300,416 @@
             </div>
         </div>
 
-        <!-- Business Data -->
+        <!-- Services Info Panel -->
         <div class="subsection">
             <div class="subsection-header">
-                <i class="fas fa-building"></i> بيانات الأعمال
+                <i class="fas fa-cogs"></i> الخدمات المفعلة
             </div>
-            <div class="table-container">
+            <div style="padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div style="border: 2px solid var(--primary-orange); padding: 15px; border-radius: 8px; text-align: center; background: rgba(217, 119, 6, 0.05);">
+                    <h4 style="margin-bottom: 10px; color: var(--primary-dark);">إدارة بيانات الأعمال</h4>
+                    <div style="font-size: 12px; color: #666; margin-bottom: 10px;">المشاريع والأقسام</div>
+                    <span style="display: inline-block; background: #28a745; color: white; padding: 8px 15px; border-radius: 5px; font-weight: 600;">
+                        <i class="fas fa-check-circle"></i> مفعلة
+                    </span>
+                </div>
+                <div style="border: 2px solid var(--primary-orange); padding: 15px; border-radius: 8px; text-align: center; background: rgba(217, 119, 6, 0.05);">
+                    <h4 style="margin-bottom: 10px; color: var(--primary-dark);">إدارة الموارد البشرية</h4>
+                    <div style="font-size: 12px; color: #666; margin-bottom: 10px;">الموظفون والعمال</div>
+                    <span style="display: inline-block; background: #28a745; color: white; padding: 8px 15px; border-radius: 5px; font-weight: 600;">
+                        <i class="fas fa-check-circle"></i> مفعلة
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Business Data Section -->
+        <div class="subsection" id="business-section" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, var(--primary-orange) 0%, var(--secondary-orange) 100%); color: white; padding: 20px;">
+                <div>
+                    <i class="fas fa-building"></i> بيانات الأعمال
+                </div>
+                <button class="btn" onclick="addBusinessRecord()" style="background: white; color: var(--primary-orange); font-weight: 600;">
+                    <i class="fas fa-plus"></i> إضافة بيانات جديدة
+                </button>
+            </div>
+            <div class="table-container" id="business-table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>اسم المشروع/القسم</th>
-                            <th>الصورة</th>
                             <th>تاريخ البداية</th>
                             <th>الحالة</th>
                             <th>الإجراءات</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>مشروع التطوير الرقمي</td>
-                            <td><i class="fas fa-image" style="color: var(--primary-orange);"></i></td>
-                            <td>2024-01-15</td>
-                            <td><span class="status-paid">نشط</span></td>
-                            <td><button class="btn btn-info">عرض التفاصيل</button></td>
-                        </tr>
-                        <tr>
-                            <td>قسم المبيعات</td>
-                            <td><i class="fas fa-image" style="color: var(--primary-orange);"></i></td>
-                            <td>2024-02-01</td>
-                            <td><span class="status-paid">نشط</span></td>
-                            <td><button class="btn btn-info">عرض التفاصيل</button></td>
-                        </tr>
-                        <tr>
-                            <td>مشروع التسويق الإلكتروني</td>
-                            <td><i class="fas fa-image" style="color: var(--primary-orange);"></i></td>
-                            <td>2024-03-10</td>
-                            <td><span class="status-installment">قيد التطوير</span></td>
-                            <td><button class="btn btn-info">عرض التفاصيل</button></td>
-                        </tr>
+                    <tbody id="business-tbody">
+                        <!-- Will be populated by JavaScript -->
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Salary Transfer -->
-        <div class="subsection">
-            <div class="subsection-header">
-                <i class="fas fa-money-bill-transfer"></i> تحويل الرواتب
+        <!-- Labor Management Section -->
+        <div class="subsection" id="labor-section" style="display: none;">
+            <div style="display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, var(--primary-orange) 0%, var(--secondary-orange) 100%); color: white; padding: 20px; flex-wrap: wrap; gap: 10px;">
+                <div>
+                    <i class="fas fa-users"></i> إدارة الموارد البشرية
+                </div>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.2); padding: 8px 15px; border-radius: 5px;">
+                        <label for="business-filter" style="color: white; font-weight: 600; margin: 0;">البحث حسب الأعمال:</label>
+                        <select id="business-filter" onchange="filterLaborByBusiness(this.value)" style="padding: 5px 10px; border-radius: 3px; border: none; min-width: 150px;">
+                            <option value="">-- عرض الكل --</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="addLaborRecord()" style="background: white; color: var(--primary-orange); font-weight: 600;">
+                        <i class="fas fa-plus"></i> إضافة موظف جديد
+                    </button>
+                </div>
             </div>
-            <div class="table-container">
+            <div class="table-container" id="labor-table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>اسم الموظف</th>
-                            <th>مبلغ الراتب</th>
-                            <th>طريقة التحويل</th>
-                            <th>الحالة</th>
+                            <th>رقم الهوية</th>
+                            <th>الراتب (ريال)</th>
+                            <th>الأعمال المسند إليها</th>
+                            <th>صورة الهوية</th>
                             <th>الإجراءات</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>أحمد محمد</td>
-                            <td>5,000 ريال</td>
-                            <td>
-                                <select class="form-control">
-                                    <option>بنكي</option>
-                                    <option>حوالة</option>
-                                    <option>نقدي</option>
-                                </select>
-                            </td>
-                            <td><span class="status-paid">مُحول</span></td>
-                            <td><button class="btn btn-success">تحويل</button></td>
-                        </tr>
-                        <tr>
-                            <td>فاطمة علي</td>
-                            <td>4,500 ريال</td>
-                            <td>
-                                <select class="form-control">
-                                    <option>بنكي</option>
-                                    <option>حوالة</option>
-                                    <option>نقدي</option>
-                                </select>
-                            </td>
-                            <td><span class="status-installment">معلق</span></td>
-                            <td><button class="btn btn-primary">تحويل</button></td>
-                        </tr>
-                        <tr>
-                            <td>محمد سالم</td>
-                            <td>5,500 ريال</td>
-                            <td>
-                                <select class="form-control">
-                                    <option>بنكي</option>
-                                    <option>حوالة</option>
-                                    <option>نقدي</option>
-                                </select>
-                            </td>
-                            <td><span class="status-installment">معلق</span></td>
-                            <td><button class="btn btn-primary">تحويل</button></td>
-                        </tr>
+                    <tbody id="labor-tbody">
+                        <!-- Will be populated by JavaScript -->
                     </tbody>
                 </table>
             </div>
         </div>
+
+        <!-- Modal for Business Description -->
+        <div id="descriptionModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+            <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; max-height: 80vh; overflow-y: auto;">
+                <h3 id="modalTitle" style="margin-bottom: 15px; color: var(--primary-dark);">التفاصيل</h3>
+                <p id="modalDescription" style="line-height: 1.6; color: #666; margin-bottom: 20px;"></p>
+                <button onclick="closeModal()" class="btn btn-primary" style="width: 100%;">إغلاق</button>
+            </div>
+        </div>
     </div>
 
-    <script type="module">
-        import { SupabaseAuth, CompanyData } from './js/supabase.js';
-
-        const auth = new SupabaseAuth();
-        const companyData = new CompanyData();
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase
+        const { createClient } = supabase;
+        const SUPABASE_URL = 'https://wlnukwaecpkhxomfgxni.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsbnVrd2FlY3BraHhvbWZneG5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2NDc4MjEsImV4cCI6MjA3NDIyMzgyMX0.PW3GVs3l15oBIa8rS86offziTFkSVefj5OFUc6XRmoA';
+        
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         let currentUser = null;
         let companyInfo = null;
+        let currentFilter = '';
+        let allLaborData = [];
+
+        // Get company info
+        async function getCompanyInfo(userId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('user_profiles')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
+                
+                if (error) throw error;
+                
+                // Get active services
+                const { data: services, error: servicesError } = await supabaseClient
+                    .from('company_services')
+                    .select('services (name)')
+                    .eq('company_id', userId)
+                    .eq('is_active', true);
+                
+                const activeServices = services ? services.map(s => s.services.name) : [];
+                
+                return {
+                    ...data,
+                    active_services: activeServices
+                };
+            } catch (error) {
+                console.error('Get company info error:', error);
+                return null;
+            }
+        }
 
         // Initialize page
         window.addEventListener('load', async function() {
-            // Check authentication
-            currentUser = await auth.getCurrentUser();
-            if (!currentUser) {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            // Verify user role
-            const userRole = await auth.getUserRole();
-            if (userRole !== 'company') {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            // Check if HR service is activated
             try {
-                companyInfo = await companyData.getCompanyInfo();
-                if (!companyInfo || !companyInfo.active_services.includes('hr')) {
-                    alert('خدمة الموارد البشرية غير مفعلة لشركتكم');
-                    window.location.href = 'dashboard.html';
+                // Check authentication
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    window.location.href = 'login.html';
                     return;
                 }
                 
-                document.getElementById('welcomeUser').textContent = 'مرحباً، ' + companyInfo.name;
+                currentUser = user;
+
+                // Get user role
+                const { data: profile } = await supabaseClient
+                    .from('user_profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (!profile || profile.role !== 'company') {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Check if HR service is activated
+                companyInfo = await getCompanyInfo(user.id);
+                if (!companyInfo) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+                
+                document.getElementById('welcomeUser').textContent = 'مرحباً، ' + companyInfo.company_name;
+
+                // Initialize service toggles
+                await initializeServices();
+                
+                // Load initial data
+                await loadBusinessRecords();
+                await loadLaborRecords();
             } catch (error) {
-                console.error('Load company info error:', error);
-                alert('حدث خطأ في تحميل بيانات الشركة');
-                window.location.href = 'dashboard.html';
+                console.error('Load error:', error);
+                window.location.href = 'login.html';
             }
         });
+
+        // Initialize service display (always enabled for HR service)
+        async function initializeServices() {
+            // Services are automatically enabled when user has HR service
+            document.getElementById('business-section').style.display = 'block';
+            document.getElementById('labor-section').style.display = 'block';
+        }
+
+        // Toggle service access - REMOVED (services are automatic with HR subscription)
+        // Both Business and Labor Management are included with HR service
+
+        // Load business records
+        async function loadBusinessRecords() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('business_records')
+                    .select('*')
+                    .eq('company_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const tbody = document.getElementById('business-tbody');
+                tbody.innerHTML = '';
+
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 20px;">لا توجد بيانات أعمال</td></tr>';
+                    return;
+                }
+
+                data.forEach(record => {
+                    const row = document.createElement('tr');
+                    // Format date as Gregorian in Arabic
+                    const formattedDate = new Date(record.start_date).toLocaleDateString('ar-SA', {
+                        calendar: 'gregory',
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    });
+                    row.innerHTML = `
+                        <td>${record.name}</td>
+                        <td>${formattedDate}</td>
+                        <td><span class="status-${record.status === 'active' ? 'paid' : 'installment'}">${record.status === 'active' ? 'نشط' : 'قيد التطوير'}</span></td>
+                        <td>
+                            <button class="btn btn-info" onclick="viewBusinessDetail('${record.id}')">عرض التفاصيل</button>
+                            <button class="btn btn-primary" onclick="editBusinessRecord('${record.id}')" style="margin-left: 5px;">تعديل</button>
+                            <button class="btn btn-danger" onclick="deleteBusinessRecord('${record.id}')" style="margin-left: 5px;">حذف</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+
+                // Update business filter dropdown
+                updateBusinessFilter(data);
+            } catch (error) {
+                console.error('Load business records error:', error);
+            }
+        }
+
+        // Load labor records
+        async function loadLaborRecords() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('labor_records')
+                    .select(`
+                        *,
+                        business_records(name)
+                    `)
+                    .eq('company_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                allLaborData = data || [];
+                displayLaborRecords(allLaborData);
+            } catch (error) {
+                console.error('Load labor records error:', error);
+            }
+        }
+
+        // Display labor records with filtering
+        function displayLaborRecords(records) {
+            const tbody = document.getElementById('labor-tbody');
+            tbody.innerHTML = '';
+
+            if (!records || records.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">لا توجد بيانات موظفين</td></tr>';
+                return;
+            }
+
+            records.forEach(record => {
+                const row = document.createElement('tr');
+                const businessName = record.business_records?.name || 'غير محدد';
+                row.innerHTML = `
+                    <td>${record.name}</td>
+                    <td>${record.national_id}</td>
+                    <td>${parseFloat(record.salary).toLocaleString('ar-SA')} ر.ع</td>
+                    <td>${businessName}</td>
+                    <td>
+                        ${record.id_image_url ? 
+                            `<a href="${record.id_image_url}" target="_blank" class="btn btn-info" style="padding: 5px 10px;">عرض الصورة</a>` : 
+                            '<span style="color: #999;">لا توجد صورة</span>'}
+                    </td>
+                    <td>
+                        <button class="btn btn-primary" onclick="editLaborRecord('${record.id}')" style="padding: 5px 10px; font-size: 11px;">تعديل</button>
+                        <button class="btn btn-danger" onclick="deleteLaborRecord('${record.id}')" style="padding: 5px 10px; font-size: 11px; margin-left: 5px;">حذف</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update business filter dropdown
+        function updateBusinessFilter(businesses) {
+            const filter = document.getElementById('business-filter');
+            const currentValue = filter.value;
+            const options = '<option value="">-- عرض الكل --</option>';
+            
+            filter.innerHTML = options + businesses.map(b => 
+                `<option value="${b.id}">${b.name}</option>`
+            ).join('');
+            
+            filter.value = currentValue;
+        }
+
+        // Filter labor by business
+        function filterLaborByBusiness(businessId) {
+            currentFilter = businessId;
+            if (!businessId) {
+                displayLaborRecords(allLaborData);
+            } else {
+                const filtered = allLaborData.filter(labor => labor.business_id === businessId);
+                displayLaborRecords(filtered);
+            }
+        }
+
+        // View business detail modal
+        async function viewBusinessDetail(id) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('business_records')
+                    .select('*')
+                    .eq('id', id)
+                    .eq('company_id', currentUser.id)
+                    .single();
+
+                if (error) throw error;
+                if (!data) {
+                    alert('السجل غير موجود');
+                    return;
+                }
+
+                document.getElementById('modalTitle').textContent = data.name;
+                document.getElementById('modalDescription').textContent = data.description || 'لا توجد تفاصيل';
+                document.getElementById('descriptionModal').style.display = 'flex';
+            } catch (error) {
+                console.error('View business detail error:', error);
+                alert('خطأ في تحميل التفاصيل');
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('descriptionModal').style.display = 'none';
+        }
+
+        // Add business record - redirect to form page
+        function addBusinessRecord() {
+            window.location.href = 'business-form.html';
+        }
+
+        // Edit business record - redirect to form page with ID
+        function editBusinessRecord(recordId) {
+            window.location.href = `business-form.html?id=${recordId}`;
+        }
+
+        // Delete business record
+        async function deleteBusinessRecord(recordId) {
+            if (!confirm('هل أنت متأكد من حذف هذا السجل؟')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('business_records')
+                    .delete()
+                    .eq('id', recordId);
+
+                if (error) throw error;
+
+                alert('تم الحذف بنجاح');
+                await loadBusinessRecords();
+            } catch (error) {
+                console.error('Delete business record error:', error);
+                alert('حدث خطأ: ' + error.message);
+            }
+        }
+
+        // Add labor record - redirect to form page
+        function addLaborRecord() {
+            window.location.href = 'labor-form.html';
+        }
+
+        // Edit labor record - redirect to form page with ID
+        function editLaborRecord(recordId) {
+            window.location.href = `labor-form.html?id=${recordId}`;
+        }
+
+        // Delete labor record
+        async function deleteLaborRecord(recordId) {
+            if (!confirm('هل أنت متأكد من حذف هذا الموظف؟')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('labor_records')
+                    .delete()
+                    .eq('id', recordId);
+
+                if (error) throw error;
+
+                alert('تم الحذف بنجاح');
+                await loadLaborRecords();
+            } catch (error) {
+                console.error('Delete labor record error:', error);
+                alert('حدث خطأ: ' + error.message);
+            }
+        }
 
         function goToDashboard() {
             window.location.href = 'dashboard.html';
@@ -447,38 +717,23 @@
 
         async function logout() {
             if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-                await auth.signOut();
+                await supabaseClient.auth.signOut();
                 window.location.href = 'login.html';
             }
         }
 
-        // Make logout function global
+        // Make functions global
         window.logout = logout;
-
-        // Add interactive functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add click handlers for transfer buttons
-            document.querySelectorAll('.btn-primary, .btn-success').forEach(btn => {
-                if (btn.textContent.includes('تحويل')) {
-                    btn.addEventListener('click', function() {
-                        if (confirm('هل أنت متأكد من تحويل الراتب؟')) {
-                            this.textContent = 'تم التحويل';
-                            this.classList.remove('btn-primary');
-                            this.classList.add('btn-success');
-                            this.disabled = true;
-
-                            // Update status
-                            const statusCell = this.closest('tr').querySelector('.status-installment');
-                            if (statusCell) {
-                                statusCell.textContent = 'مُحول';
-                                statusCell.classList.remove('status-installment');
-                                statusCell.classList.add('status-paid');
-                            }
-                        }
-                    });
-                }
-            });
-        });
+        window.goToDashboard = goToDashboard;
+        window.viewBusinessDetail = viewBusinessDetail;
+        window.closeModal = closeModal;
+        window.addBusinessRecord = addBusinessRecord;
+        window.editBusinessRecord = editBusinessRecord;
+        window.deleteBusinessRecord = deleteBusinessRecord;
+        window.addLaborRecord = addLaborRecord;
+        window.editLaborRecord = editLaborRecord;
+        window.deleteLaborRecord = deleteLaborRecord;
+        window.filterLaborByBusiness = filterLaborByBusiness;
     </script>
 </body>
 </html>

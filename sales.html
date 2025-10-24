@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أُفُق - المبيعات</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #1E293B;
+            --primary-orange: #D97706;
+            --secondary-orange: #D9882E;
+            --accent-blue: #344663;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --border-gray: #e9ecef;
+            --danger-red: #dc3545;
+            --success-green: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #ffffff 100%);
+            min-height: 100vh;
+            color: var(--primary-dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-content img {
+            width: 50px;
+            height: auto;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary-orange);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-orange);
+        }
+
+        .btn-back {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .service-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: var(--primary-orange);
+        }
+
+        .service-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
+        }
+
+        .service-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        th {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: var(--light-gray);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            margin: 0 3px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: var(--border-gray);
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--primary-orange);
+        }
+
+        .search-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 16px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-orange);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <img src="iconWithArabic (2).svg" alt="OFOQ Logo">
+                <div class="header-title">
+                    <i class="fas fa-shopping-cart"></i> المبيعات
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="window.location.href='pos-scanner.html'">
+                    <i class="fas fa-qrcode"></i> نقطة بيع جديدة
+                </button>
+                <button class="btn btn-back" onclick="window.location.href='accounting.html'">
+                    <i class="fas fa-arrow-right"></i> العودة
+                </button>
+            </div>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="بحث برقم البيع...">
+        </div>
+
+        <div class="table-container">
+            <table id="salesTable">
+                <thead>
+                    <tr>
+                        <th>رقم البيع</th>
+                        <th>المبلغ الإجمالي (ر.ع)</th>
+                        <th>حالة الدفع</th>
+                        <th>تاريخ البيع</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="salesBody">
+                    <tr>
+                        <td colspan="5" class="loading">
+                            <i class="fas fa-spinner fa-spin"></i> جاري التحميل...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase
+        const { createClient } = supabase;
+        const SUPABASE_URL = 'https://wlnukwaecpkhxomfgxni.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsbnVrd2FlY3BraHhvbWZneG5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2NDc4MjEsImV4cCI6MjA3NDIyMzgyMX0.PW3GVs3l15oBIa8rS86offziTFkSVefj5OFUc6XRmoA';
+        
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentUser = null;
+        let allSales = [];
+
+        // Initialize page
+        window.addEventListener('load', async function() {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const { data: profile } = await supabaseClient
+                    .from('user_profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (!profile || profile.role !== 'company') {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = user;
+                await loadSales();
+            } catch (error) {
+                console.error('Load error:', error);
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Load sales
+        async function loadSales() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('sales')
+                    .select('*')
+                    .eq('company_id', currentUser.id)
+                    .order('sale_date', { ascending: false });
+
+                if (error) throw error;
+
+                allSales = data || [];
+                renderSales(allSales);
+            } catch (error) {
+                console.error('Load sales error:', error);
+                alert('خطأ في تحميل المبيعات: ' + error.message);
+            }
+        }
+
+        // Render sales
+        function renderSales(sales) {
+            const tbody = document.getElementById('salesBody');
+            
+            if (!sales || sales.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class="fas fa-shopping-cart"></i>
+                            <p>لا توجد مبيعات مسجلة</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = sales.map(sale => {
+                const paymentBadge = sale.payment_status === 'paid' 
+                    ? '<span style="color: var(--success-green);"><i class="fas fa-check-circle"></i> مدفوع</span>'
+                    : '<span style="color: var(--primary-orange);"><i class="fas fa-clock"></i> معلق</span>';
+
+                const saleDate = new Date(sale.sale_date).toLocaleDateString('ar-SA', {
+                    calendar: 'gregory',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                return `
+                    <tr>
+                        <td><strong>${sale.sale_number}</strong></td>
+                        <td>${parseFloat(sale.total_amount).toFixed(3)}</td>
+                        <td>${paymentBadge}</td>
+                        <td>${saleDate}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="viewSaleDetails('${sale.id}')">
+                                <i class="fas fa-eye"></i> عرض التفاصيل
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteSale('${sale.id}')">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = allSales.filter(s => 
+                s.sale_number.toLowerCase().includes(searchTerm)
+            );
+            renderSales(filtered);
+        });
+
+        // View sale details
+        async function viewSaleDetails(saleId) {
+            try {
+                const { data: items, error } = await supabaseClient
+                    .from('sale_items')
+                    .select('*')
+                    .eq('sale_id', saleId);
+
+                if (error) throw error;
+
+                if (!items || items.length === 0) {
+                    alert('لا توجد تفاصيل لهذه العملية');
+                    return;
+                }
+
+                let details = 'تفاصيل البيع:\n\n';
+                items.forEach(item => {
+                    details += `${item.product_name} (${item.product_code})\n`;
+                    details += `الكمية: ${item.quantity} × ${parseFloat(item.unit_price).toFixed(3)} = ${parseFloat(item.subtotal).toFixed(3)} ر.ع\n\n`;
+                });
+
+                const total = items.reduce((sum, item) => sum + parseFloat(item.subtotal), 0);
+                details += `الإجمالي: ${total.toFixed(3)} ر.ع`;
+
+                alert(details);
+            } catch (error) {
+                console.error('View details error:', error);
+                alert('خطأ في عرض التفاصيل: ' + error.message);
+            }
+        }
+
+        // Delete sale
+        async function deleteSale(saleId) {
+            if (!confirm('هل أنت متأكد من حذف هذه العملية؟ سيتم حذف الفاتورة المرتبطة أيضاً.')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('sales')
+                    .delete()
+                    .eq('id', saleId);
+
+                if (error) throw error;
+
+                alert('تم حذف العملية بنجاح!');
+                await loadSales();
+            } catch (error) {
+                console.error('Delete sale error:', error);
+                alert('خطأ في حذف العملية: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+{
+  "projectName": "OFOQ Business Management System",
+  "description": "Arabic business management system with role-based authentication",
+  "testSuites": {
+    "authentication": {
+      "description": "Test user authentication and role-based access",
+      "tests": [
+        {
+          "name": "Admin Login Test",
+          "url": "https://your-vercel-app.vercel.app/login.html",
+          "steps": [
+            "Fill email field with admin@ofoq.com",
+            "Fill password field with admin password",
+            "Click login button",
+            "Verify redirect to admin-dashboard.html",
+            "Verify Arabic UI elements display correctly"
+          ]
+        },
+        {
+          "name": "Company Login Test",
+          "url": "https://your-vercel-app.vercel.app/login.html",
+          "steps": [
+            "Fill email field with test@gmail.com",
+            "Fill password field with company password",
+            "Click login button",
+            "Verify redirect to dashboard.html",
+            "Verify only activated services are shown"
+          ]
+        }
+      ]
+    },
+    "adminFunctions": {
+      "description": "Test admin dashboard functionality",
+      "tests": [
+        {
+          "name": "Create Company Test",
+          "url": "https://your-vercel-app.vercel.app/admin-dashboard.html",
+          "steps": [
+            "Login as admin",
+            "Fill company creation form",
+            "Submit form",
+            "Verify company appears in list",
+            "Test service activation toggles"
+          ]
+        }
+      ]
+    },
+    "responsiveness": {
+      "description": "Test responsive design on different devices",
+      "tests": [
+        {
+          "name": "Mobile Responsiveness",
+          "viewports": ["mobile", "tablet", "desktop"],
+          "pages": ["login.html", "dashboard.html", "admin-dashboard.html"]
+        }
+      ]
+    },
+    "rtlSupport": {
+      "description": "Test Arabic RTL text rendering",
+      "tests": [
+        {
+          "name": "Arabic Text Display",
+          "checks": [
+            "Verify Arabic text renders correctly",
+            "Verify RTL layout alignment",
+            "Verify Arabic error messages display properly"
+          ]
+        }
+      ]
+    }
+  },
+  "environment": {
+    "baseUrl": "https://your-vercel-app.vercel.app",
+    "testUser": {
+      "admin": {
+        "email": "admin@ofoq.com",
+        "password": "your-admin-password"
+      },
+      "company": {
+        "email": "test@gmail.com", 
+        "password": "your-test-password"
+      }
+    }
+  },
+  "expectations": {
+    "loadTime": "< 3 seconds",
+    "accessibility": "WCAG AA compliant",
+    "browserSupport": ["Chrome", "Firefox", "Safari", "Edge"],
+    "mobileSupport": true,
+    "rtlSupport": true
+  }
+}

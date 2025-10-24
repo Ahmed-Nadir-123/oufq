@@ -248,11 +248,98 @@
         </div>
     </div>
 
-    <script type="module">
-        import { SupabaseAuth, CompanyData } from './js/supabase.js';
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase
+        const { createClient } = supabase;
+        const supabaseClient = createClient(
+            'https://wlnukwaecpkhxomfgxni.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsbnVrd2FlY3BraHhvbWZneG5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2NDc4MjEsImV4cCI6MjA3NDIyMzgyMX0.PW3GVs3l15oBIa8rS86offziTFkSVefj5OFUc6XRmoA'
+        );
 
-        const auth = new SupabaseAuth();
-        const companyData = new CompanyData();
+        // Authentication and data classes
+        class AuthService {
+            static async getCurrentUser() {
+                try {
+                    const { data: { user } } = await supabaseClient.auth.getUser();
+                    return user;
+                } catch (error) {
+                    console.error('Get current user error:', error);
+                    return null;
+                }
+            }
+            
+            static async getUserRole() {
+                try {
+                    const user = await this.getCurrentUser();
+                    if (!user) return null;
+                    
+                    const { data, error } = await supabaseClient
+                        .from('user_profiles')
+                        .select('role')
+                        .eq('id', user.id)
+                        .single();
+                    
+                    if (error) throw error;
+                    
+                    return data?.role || null;
+                } catch (error) {
+                    console.error('Get user role error:', error);
+                    return null;
+                }
+            }
+            
+            static async signOut() {
+                try {
+                    const { error } = await supabaseClient.auth.signOut();
+                    if (error) throw error;
+                    return { success: true };
+                } catch (error) {
+                    return { success: false, error: error.message };
+                }
+            }
+        }
+
+        class CompanyDataService {
+            static async getCompanyInfo() {
+                try {
+                    const user = await AuthService.getCurrentUser();
+                    if (!user) throw new Error('User not authenticated');
+                    
+                    const { data, error } = await supabaseClient
+                        .from('user_profiles')
+                        .select('*')
+                        .eq('id', user.id)
+                        .single();
+                    
+                    if (error) throw error;
+                    
+                    // Get active services for the company
+                    const { data: services, error: servicesError } = await supabaseClient
+                        .from('company_services')
+                        .select(`
+                            services (name)
+                        `)
+                        .eq('company_id', user.id)
+                        .eq('is_active', true);
+                    
+                    if (servicesError) {
+                        console.warn('Could not load services:', servicesError);
+                    }
+                    
+                    // Extract service names
+                    const activeServices = services ? services.map(s => s.services.name) : [];
+                    
+                    return {
+                        ...data,
+                        active_services: activeServices
+                    };
+                } catch (error) {
+                    console.error('Get company info error:', error);
+                    return null;
+                }
+            }
+        }
         let currentUser = null;
         let companyInfo = null;
 
@@ -263,6 +350,12 @@
                 description: 'إدارة شؤون الموظفين والرواتب والحضور والانصراف',
                 icon: 'fas fa-users',
                 action: 'goToManagement'
+            },
+            accounting: {
+                title: 'المحاسبة',
+                description: 'إدارة المخزون، المبيعات، والفواتير',
+                icon: 'fas fa-calculator',
+                action: 'goToAccounting'
             },
             inventory: {
                 title: 'إدارة المخزون',
@@ -287,14 +380,14 @@
         // Initialize dashboard
         window.addEventListener('load', async function() {
             // Check authentication
-            currentUser = await auth.getCurrentUser();
+            currentUser = await AuthService.getCurrentUser();
             if (!currentUser) {
                 window.location.href = 'login.html';
                 return;
             }
 
             // Verify user role
-            const userRole = await auth.getUserRole();
+            const userRole = await AuthService.getUserRole();
             if (userRole !== 'company') {
                 window.location.href = 'login.html';
                 return;
@@ -302,9 +395,9 @@
 
             // Load company information
             try {
-                companyInfo = await companyData.getCompanyInfo();
+                companyInfo = await CompanyDataService.getCompanyInfo();
                 if (companyInfo) {
-                    document.getElementById('welcomeUser').textContent = 'مرحباً، ' + companyInfo.name;
+                    document.getElementById('welcomeUser').textContent = 'مرحباً، ' + companyInfo.company_name;
                     await loadActivatedServices();
                 } else {
                     showError('خطأ في تحميل بيانات الشركة');
@@ -358,6 +451,14 @@
             }
         };
 
+        window.goToAccounting = function() {
+            if (hasService('accounting')) {
+                window.location.href = 'accounting.html';
+            } else {
+                alert('هذه الخدمة غير مفعلة لشركتكم');
+            }
+        };
+
         window.goToFinancial = function() {
             if (hasService('invoices')) {
                 window.location.href = 'financial.html';
@@ -393,7 +494,7 @@
         // Logout function
         window.logout = async function() {
             if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-                await auth.signOut();
+                await AuthService.signOut();
                 window.location.href = 'login.html';
             }
         };

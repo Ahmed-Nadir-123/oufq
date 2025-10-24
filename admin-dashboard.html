@@ -395,23 +395,222 @@
         </div>
     </div>
 
-    <script type="module">
-        import { SupabaseAuth, AdminFunctions } from './js/supabase.js';
+    <!-- Add Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // Initialize Supabase client
+        const { createClient } = supabase;
+        const supabaseClient = createClient(
+            'https://wlnukwaecpkhxomfgxni.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsbnVrd2FlY3BraHhvbWZneG5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2NDc4MjEsImV4cCI6MjA3NDIyMzgyMX0.PW3GVs3l15oBIa8rS86offziTFkSVefj5OFUc6XRmoA'
+        );
+        
+        // Authentication class
+        class AuthService {
+            static async getCurrentUser() {
+                try {
+                    const { data: { user } } = await supabaseClient.auth.getUser();
+                    return user;
+                } catch (error) {
+                    console.error('Get current user error:', error);
+                    return null;
+                }
+            }
+            
+            static async getUserRole() {
+                try {
+                    const user = await this.getCurrentUser();
+                    if (!user) return null;
+                    
+                    const { data, error } = await supabaseClient
+                        .from('user_profiles')
+                        .select('role')
+                        .eq('id', user.id)
+                        .single();
+                    
+                    if (error) throw error;
+                    
+                    return data?.role || null;
+                } catch (error) {
+                    console.error('Get user role error:', error);
+                    return null;
+                }
+            }
+            
+            static async signOut() {
+                try {
+                    const { error } = await supabaseClient.auth.signOut();
+                    if (error) throw error;
+                    return { success: true };
+                } catch (error) {
+                    return { success: false, error: error.message };
+                }
+            }
+        }
+        
+        // Admin functions class
+        class AdminService {
+            static async getCompanies() {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('user_profiles')
+                        .select('*')
+                        .eq('role', 'company')
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) throw error;
+                    
+                    // Get active services for each company
+                    const companiesWithServices = await Promise.all(
+                        data.map(async (company) => {
+                            const { data: services } = await supabaseClient
+                                .from('company_services')
+                                .select(`
+                                    services (name)
+                                `)
+                                .eq('company_id', company.id)
+                                .eq('is_active', true);
+                            
+                            const activeServices = services ? services.map(s => s.services.name) : [];
+                            
+                            return {
+                                ...company,
+                                active_services: activeServices
+                            };
+                        })
+                    );
+                    
+                    return companiesWithServices;
+                } catch (error) {
+                    console.error('Get companies error:', error);
+                    throw error;
+                }
+            }
+            
+            static async createCompany(companyData) {
+                try {
+                    // Sign up the user with email auto-confirmation
+                    const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+                        email: companyData.email,
+                        password: companyData.password
+                    });
+                    
+                    if (authError) throw authError;
+                    
+                    // Auto-confirm the user's email
+                    if (authData.user) {
+                        const { error: confirmError } = await supabaseClient.rpc('confirm_user_email', {
+                            user_id: authData.user.id
+                        });
+                        
+                        // If RPC doesn't work, try direct SQL update
+                        if (confirmError) {
+                            console.warn('RPC confirm failed, trying direct update:', confirmError);
+                            // We'll handle this in the SQL fix instead
+                        }
+                    }
+                    
+                    // Create user profile
+                    const { data: profileData, error: profileError } = await supabaseClient
+                        .from('user_profiles')
+                        .insert([{
+                            id: authData.user.id,
+                            role: 'company',
+                            company_name: companyData.name,
+                            contact_person: companyData.name,
+                            phone: companyData.phone,
+                            address: companyData.address
+                        }])
+                        .select()
+                        .single();
+                    
+                    if (profileError) throw profileError;
+                    
+                    return {
+                        success: true,
+                        data: profileData,
+                        needsConfirmation: !!confirmError
+                    };
+                } catch (error) {
+                    return {
+                        success: false,
+                        error: error.message
+                    };
+                }
+            }
+            
+            static async toggleService(companyId, serviceName, isActive) {
+                try {
+                    // Get service ID
+                    const { data: service, error: serviceError } = await supabaseClient
+                        .from('services')
+                        .select('id')
+                        .eq('name', serviceName)
+                        .single();
+                    
+                    if (serviceError) throw serviceError;
+                    
+                    // Upsert company service with onConflict to handle existing records
+                    const { data, error } = await supabaseClient
+                        .from('company_services')
+                        .upsert({
+                            company_id: companyId,
+                            service_id: service.id,
+                            is_active: isActive,
+                            activated_at: isActive ? new Date().toISOString() : null
+                        }, {
+                            onConflict: 'company_id,service_id',
+                            ignoreDuplicates: false
+                        })
+                        .select();
+                    
+                    if (error) throw error;
+                    
+                    return {
+                        success: true,
+                        data: data[0]
+                    };
+                } catch (error) {
+                    console.error('Toggle service error:', error);
+                    return {
+                        success: false,
+                        error: error.message
+                    };
+                }
+            }
+            
+            static async deleteCompany(companyId) {
+                try {
+                    const { error } = await supabaseClient
+                        .from('user_profiles')
+                        .delete()
+                        .eq('id', companyId);
+                    
+                    if (error) throw error;
+                    
+                    return { success: true };
+                } catch (error) {
+                    return {
+                        success: false,
+                        error: error.message
+                    };
+                }
+            }
+        }
 
-        const auth = new SupabaseAuth();
-        const admin = new AdminFunctions();
         let currentUser = null;
 
         // Initialize admin dashboard
         window.addEventListener('load', async function() {
             // Check if user is authenticated and is admin
-            currentUser = await auth.getCurrentUser();
+            currentUser = await AuthService.getCurrentUser();
             if (!currentUser) {
                 window.location.href = 'login.html';
                 return;
             }
 
-            const userRole = await auth.getUserRole();
+            const userRole = await AuthService.getUserRole();
             if (userRole !== 'admin') {
                 alert('غير مسموح لك بالوصول لهذه الصفحة');
                 window.location.href = 'login.html';
@@ -441,7 +640,7 @@
             try {
                 showMessage('جاري إنشاء الشركة...', 'info');
                 
-                const result = await admin.createCompany(formData);
+                const result = await AdminService.createCompany(formData);
                 
                 if (result.success) {
                     showMessage('تم إنشاء الشركة بنجاح!', 'success');
@@ -462,7 +661,7 @@
             companiesContainer.innerHTML = '<div class="loading">جاري تحميل الشركات...</div>';
 
             try {
-                const companies = await admin.getCompanies();
+                const companies = await AdminService.getCompanies();
                 displayCompanies(companies);
             } catch (error) {
                 console.error('Load companies error:', error);
@@ -484,12 +683,12 @@
                 html += `
                     <div class="company-item">
                         <div class="company-header">
-                            <div class="company-name">${company.name}</div>
+                            <div class="company-name">${company.company_name || company.email}</div>
                             <button class="btn btn-danger btn-sm" onclick="deleteCompany('${company.id}')">
                                 <i class="fas fa-trash"></i> حذف
                             </button>
                         </div>
-                        <p><strong>البريد الإلكتروني:</strong> ${company.email}</p>
+                        <p><strong>البريد الإلكتروني:</strong> ${company.company_name || company.email}</p>
                         ${company.phone ? `<p><strong>الهاتف:</strong> ${company.phone}</p>` : ''}
                         ${company.address ? `<p><strong>العنوان:</strong> ${company.address}</p>` : ''}
                         
@@ -528,7 +727,7 @@
             const isActive = toggleElement.classList.contains('active');
             
             try {
-                const result = await admin.toggleService(companyId, serviceKey, !isActive);
+                const result = await AdminService.toggleService(companyId, serviceKey, !isActive);
                 
                 if (result.success) {
                     toggleElement.classList.toggle('active');
@@ -549,7 +748,7 @@
             }
 
             try {
-                const result = await admin.deleteCompany(companyId);
+                const result = await AdminService.deleteCompany(companyId);
                 
                 if (result.success) {
                     showMessage('تم حذف الشركة بنجاح', 'success');
@@ -566,7 +765,7 @@
         // Handle logout
         window.handleLogout = async function() {
             if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
-                await auth.signOut();
+                await AuthService.signOut();
                 window.location.href = 'login.html';
             }
         };

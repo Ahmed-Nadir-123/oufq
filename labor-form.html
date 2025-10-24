@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أُفُق - نموذج الموارد البشرية</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #1E293B;
+            --primary-orange: #D97706;
+            --secondary-orange: #D9882E;
+            --accent-blue: #344663;
+            --light-orange: #D89955;
+            --medium-blue: #49648A;
+            --pale-orange: #D8AA7D;
+            --soft-blue: #5F81B2;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --border-gray: #e9ecef;
+            --danger: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #ffffff 100%);
+            min-height: 100vh;
+            color: var(--primary-dark);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-content img {
+            width: 60px;
+            height: auto;
+        }
+
+        .header-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-back:hover {
+            background: #2d3a52;
+            transform: translateY(-2px);
+        }
+
+        .form-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-size: 16px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-orange);
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .btn-submit {
+            background: var(--primary-orange);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-submit:hover {
+            background: var(--secondary-orange);
+            transform: translateY(-2px);
+        }
+
+        .btn-cancel {
+            background: var(--light-gray);
+            color: var(--primary-dark);
+            flex: 1;
+        }
+
+        .btn-cancel:hover {
+            background: var(--border-gray);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: var(--primary-orange);
+            margin-top: 10px;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+
+        .required {
+            color: var(--danger);
+            margin-right: 3px;
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--primary-dark);
+            text-align: right;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <img src="iconWithArabic (2).svg" alt="OFOQ Logo">
+                <div>
+                    <div class="header-title">نموذج الموارد البشرية</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-back" onclick="goBack()">
+                    <i class="fas fa-arrow-right"></i> العودة
+                </button>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <div id="alertBox" class="alert"></div>
+
+            <div class="form-title" id="formTitle">إضافة موظف جديد</div>
+
+            <form id="laborForm" onsubmit="submitForm(event)">
+                <div class="form-group">
+                    <label for="business_id">
+                        <span class="required">*</span>الأعمال/المشروع
+                    </label>
+                    <select id="business_id" name="business_id" required>
+                        <option value="">-- اختر أعمال --</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">
+                        <span class="required">*</span>اسم الموظف
+                    </label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name" 
+                        placeholder="أدخل اسم الموظف" 
+                        required
+                    >
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="national_id">
+                            <span class="required">*</span>رقم الهوية
+                        </label>
+                        <input 
+                            type="text" 
+                            id="national_id" 
+                            name="national_id" 
+                            placeholder="أدخل رقم الهوية" 
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="salary">
+                            <span class="required">*</span>الراتب (ريال)
+                        </label>
+                        <input 
+                            type="number" 
+                            id="salary" 
+                            name="salary" 
+                            placeholder="أدخل الراتب" 
+                            step="0.001"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_image_url">صورة الهوية (اختياري)</label>
+                    <div id="imageInputWrapper" style="display: flex; gap: 10px; align-items: flex-start;">
+                        <input 
+                            type="file" 
+                            id="id_image_url" 
+                            name="id_image_url" 
+                            accept="image/*"
+                            style="flex: 1;"
+                        >
+                        <button type="button" class="btn" onclick="uploadImage()" style="background: var(--soft-blue); color: white; padding: 12px 20px;">
+                            <i class="fas fa-cloud-upload-alt"></i> رفع الصورة
+                        </button>
+                    </div>
+                    <div id="imageStatus" style="margin-top: 10px; font-size: 12px; color: #666;"></div>
+                    <img id="imagePreview" style="margin-top: 15px; max-width: 200px; border-radius: 8px; display: none;">
+                    <input type="hidden" id="image_url_hidden" name="image_url_hidden">
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel" onclick="goBack()">
+                        <i class="fas fa-times"></i> إلغاء
+                    </button>
+                    <button type="submit" class="btn btn-submit">
+                        <i class="fas fa-save"></i> حفظ
+                    </button>
+                </div>
+
+                <div class="loading" id="loading">
+                    <i class="fas fa-spinner fa-spin"></i> جاري حفظ البيانات...
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase
+        const { createClient } = supabase;
+        const SUPABASE_URL = 'https://wlnukwaecpkhxomfgxni.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsbnVrd2FlY3BraHhvbWZneG5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2NDc4MjEsImV4cCI6MjA3NDIyMzgyMX0.PW3GVs3l15oBIa8rS86offziTFkSVefj5OFUc6XRmoA';
+        
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentUser = null;
+        let laborId = null;
+        let isEditMode = false;
+        let uploadedImageUrl = null;
+
+        // Initialize page
+        window.addEventListener('load', async function() {
+            try {
+                // Check authentication
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                // Check role
+                const { data: profile } = await supabaseClient
+                    .from('user_profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (!profile || profile.role !== 'company') {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = user;
+
+                // Load business records for dropdown
+                await loadBusinessDropdown();
+
+                // Check if editing
+                const params = new URLSearchParams(window.location.search);
+                laborId = params.get('id');
+
+                if (laborId) {
+                    isEditMode = true;
+                    await loadLaborData(laborId);
+                    document.getElementById('formTitle').textContent = 'تعديل بيانات الموظف';
+                }
+            } catch (error) {
+                console.error('Load error:', error);
+                showAlert('حدث خطأ في تحميل الصفحة', 'danger');
+            }
+        });
+
+        // Load business records for dropdown
+        async function loadBusinessDropdown() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('business_records')
+                    .select('id, name')
+                    .eq('company_id', currentUser.id)
+                    .eq('status', 'active')
+                    .order('name', { ascending: true });
+
+                if (error) throw error;
+
+                const select = document.getElementById('business_id');
+                data.forEach(business => {
+                    const option = document.createElement('option');
+                    option.value = business.id;
+                    option.textContent = business.name;
+                    select.appendChild(option);
+                });
+
+                if (data.length === 0) {
+                    showAlert('لا توجد أعمال متاحة. يرجى إضافة أعمال أولاً.', 'danger');
+                }
+            } catch (error) {
+                console.error('Load business dropdown error:', error);
+                showAlert('خطأ في تحميل الأعمال', 'danger');
+            }
+        }
+
+        // Load labor data for editing
+        async function loadLaborData(id) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('labor_records')
+                    .select('*')
+                    .eq('id', id)
+                    .eq('company_id', currentUser.id)
+                    .single();
+
+                if (error) throw error;
+                if (!data) {
+                    showAlert('السجل غير موجود', 'danger');
+                    return;
+                }
+
+                // Fill form with data
+                document.getElementById('business_id').value = data.business_id;
+                document.getElementById('name').value = data.name;
+                document.getElementById('national_id').value = data.national_id;
+                document.getElementById('salary').value = data.salary;
+                
+                if (data.id_image_url) {
+                    uploadedImageUrl = data.id_image_url;
+                    document.getElementById('imagePreview').src = data.id_image_url;
+                    document.getElementById('imagePreview').style.display = 'block';
+                    document.getElementById('imageStatus').textContent = '✓ صورة محفوظة';
+                    document.getElementById('imageStatus').style.color = '#28a745';
+                }
+            } catch (error) {
+                console.error('Load labor error:', error);
+                showAlert('خطأ في تحميل البيانات', 'danger');
+            }
+        }
+
+        // Upload image to Supabase storage
+        async function uploadImage() {
+            try {
+                const fileInput = document.getElementById('id_image_url');
+                const file = fileInput.files[0];
+
+                if (!file) {
+                    showAlert('الرجاء اختيار ملف صورة', 'danger');
+                    return;
+                }
+
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    showAlert('الرجاء اختيار ملف صورة صحيح', 'danger');
+                    return;
+                }
+
+                // Validate file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    showAlert('حجم الصورة يجب أن لا يتجاوز 5 ميجابايت', 'danger');
+                    return;
+                }
+
+                const statusDiv = document.getElementById('imageStatus');
+                statusDiv.textContent = '⏳ جاري رفع الصورة...';
+                statusDiv.style.color = '#D97706';
+
+                // Create unique filename (simpler path)
+                const fileExt = file.name.split('.').pop().toLowerCase();
+                const uniqueName = `labor_${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+
+                console.log('Uploading file:', uniqueName);
+                console.log('File size:', file.size, 'bytes');
+                console.log('File type:', file.type);
+
+                // Upload to Supabase storage
+                const { data, error } = await supabaseClient.storage
+                    .from('id_images')
+                    .upload(uniqueName, file, {
+                        cacheControl: '3600',
+                        upsert: false,
+                        contentType: file.type
+                    });
+
+                if (error) {
+                    console.error('Upload error details:', error);
+                    console.error('Error code:', error.statusCode);
+                    throw new Error(`فشل الرفع: ${error.message}`);
+                }
+
+                console.log('Upload successful:', data);
+
+                // Get public URL
+                const { data: publicUrlData } = supabaseClient.storage
+                    .from('id_images')
+                    .getPublicUrl(uniqueName);
+
+                if (!publicUrlData || !publicUrlData.publicUrl) {
+                    throw new Error('فشل في الحصول على رابط الصورة');
+                }
+
+                uploadedImageUrl = publicUrlData.publicUrl;
+                console.log('Image uploaded successfully:', uploadedImageUrl);
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('imagePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+
+                statusDiv.textContent = '✓ تم رفع الصورة بنجاح';
+                statusDiv.style.color = '#28a745';
+
+            } catch (error) {
+                console.error('Upload image error:', error);
+                const errorMsg = error.message || 'خطأ غير معروف';
+                document.getElementById('imageStatus').textContent = '✗ ' + errorMsg;
+                document.getElementById('imageStatus').style.color = '#dc3545';
+                showAlert('خطأ في رفع الصورة: ' + errorMsg, 'danger');
+            }
+        }
+
+        // Submit form
+        async function submitForm(event) {
+            event.preventDefault();
+
+            try {
+                const loading = document.getElementById('loading');
+                loading.style.display = 'block';
+
+                // Check if a file is selected but not uploaded
+                const fileInput = document.getElementById('id_image_url');
+                if (fileInput.files.length > 0 && !uploadedImageUrl) {
+                    loading.style.display = 'none';
+                    showAlert('الرجاء رفع الصورة أولاً بالضغط على زر "رفع الصورة"', 'danger');
+                    return;
+                }
+
+                const formData = {
+                    name: document.getElementById('name').value.trim(),
+                    national_id: document.getElementById('national_id').value.trim(),
+                    salary: parseFloat(document.getElementById('salary').value),
+                    business_id: document.getElementById('business_id').value,
+                    company_id: currentUser.id,
+                    updated_at: new Date().toISOString()
+                };
+
+                // Only update image URL if a new one was uploaded
+                if (uploadedImageUrl) {
+                    formData.id_image_url = uploadedImageUrl;
+                }
+
+                let result;
+
+                if (isEditMode) {
+                    // Update - only include fields that should be updated
+                    const updateData = {
+                        name: formData.name,
+                        national_id: formData.national_id,
+                        salary: formData.salary,
+                        business_id: formData.business_id,
+                        updated_at: formData.updated_at
+                    };
+
+                    // Only update image if a new one was uploaded
+                    if (uploadedImageUrl) {
+                        updateData.id_image_url = uploadedImageUrl;
+                    }
+
+                    const { data, error } = await supabaseClient
+                        .from('labor_records')
+                        .update(updateData)
+                        .eq('id', laborId)
+                        .eq('company_id', currentUser.id)
+                        .select();
+
+                    result = { data, error };
+                } else {
+                    // Insert new record
+                    formData.created_at = new Date().toISOString();
+                    formData.id_image_url = uploadedImageUrl || null;
+
+                    const { data, error } = await supabaseClient
+                        .from('labor_records')
+                        .insert([formData])
+                        .select();
+
+                    result = { data, error };
+                }
+
+                loading.style.display = 'none';
+
+                if (result.error) throw result.error;
+
+                showAlert(isEditMode ? 'تم التحديث بنجاح' : 'تم الإضافة بنجاح', 'success');
+                
+                // Redirect back after 1.5 seconds
+                setTimeout(() => {
+                    window.location.href = 'management.html';
+                }, 1500);
+            } catch (error) {
+                console.error('Submit error:', error);
+                document.getElementById('loading').style.display = 'none';
+                showAlert('خطأ في حفظ البيانات: ' + error.message, 'danger');
+            }
+        }
+
+        // Show alert
+        function showAlert(message, type) {
+            const alertBox = document.getElementById('alertBox');
+            alertBox.textContent = message;
+            alertBox.className = `alert alert-${type}`;
+            alertBox.style.display = 'block';
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    alertBox.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // Go back
+        function goBack() {
+            window.location.href = 'management.html';
+        }
+
+        // Make uploadImage globally accessible
+        window.uploadImage = uploadImage;
+    </script>
+</body>
+</html>

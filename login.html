@@ -148,23 +148,92 @@
         </div>
     </div>
 
-    <script type="module">
-        import { SupabaseAuth } from './js/supabase.js';
-
-        const auth = new SupabaseAuth();
+    <!-- Add Supabase CDN before the script -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <script>
+        // Initialize Supabase client
+        const { createClient } = supabase;
+        const supabaseClient = createClient(
+            'https://wlnukwaecpkhxomfgxni.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsbnVrd2FlY3BraHhvbWZneG5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2NDc4MjEsImV4cCI6MjA3NDIyMzgyMX0.PW3GVs3l15oBIa8rS86offziTFkSVefj5OFUc6XRmoA'
+        );
+        
+        // Authentication functions
+        class AuthService {
+            static async signIn(email, password) {
+                try {
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email: email,
+                        password: password
+                    });
+                    
+                    if (error) throw error;
+                    
+                    return {
+                        user: data.user,
+                        session: data.session,
+                        error: null
+                    };
+                } catch (error) {
+                    return {
+                        user: null,
+                        session: null,
+                        error: error
+                    };
+                }
+            }
+            
+            static async getCurrentUser() {
+                try {
+                    const { data: { user } } = await supabaseClient.auth.getUser();
+                    return user;
+                } catch (error) {
+                    console.error('Get current user error:', error);
+                    return null;
+                }
+            }
+            
+            static async getUserRole() {
+                try {
+                    const user = await this.getCurrentUser();
+                    if (!user) return null;
+                    
+                    const { data, error } = await supabaseClient
+                        .from('user_profiles')
+                        .select('role')
+                        .eq('id', user.id)
+                        .single();
+                    
+                    if (error) throw error;
+                    
+                    return data?.role || null;
+                } catch (error) {
+                    console.error('Get user role error:', error);
+                    return null;
+                }
+            }
+            
+            static async signOut() {
+                try {
+                    const { error } = await supabaseClient.auth.signOut();
+                    if (error) throw error;
+                    return { success: true };
+                } catch (error) {
+                    return { success: false, error: error.message };
+                }
+            }
+        }
         
         // Display loading state
         function showLoading(show) {
             const btn = document.querySelector('.login-btn');
-            const icon = btn.querySelector('i');
             
             if (show) {
                 btn.disabled = true;
-                icon.className = 'fas fa-spinner fa-spin';
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري التسجيل...';
             } else {
                 btn.disabled = false;
-                icon.className = 'fas fa-sign-in-alt';
                 btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> تسجيل الدخول';
             }
         }
@@ -209,21 +278,25 @@
 
             try {
                 // Attempt login with Supabase
-                const { user, session, error } = await auth.signIn(email, password);
+                const { user, session, error } = await AuthService.signIn(email, password);
                 
                 if (error) {
+                    console.error('Login error:', error);
                     if (error.message.includes('Invalid login credentials')) {
                         showError('البريد الإلكتروني أو كلمة المرور غير صحيحة');
                     } else if (error.message.includes('Email not confirmed')) {
                         showError('يرجى تأكيد البريد الإلكتروني أولاً');
                     } else {
-                        showError('حدث خطأ في تسجيل الدخول. يرجى المحاولة مرة أخرى');
+                        showError('حدث خطأ في تسجيل الدخول: ' + error.message);
                     }
                     return;
                 }
 
+                console.log('Login successful:', { user, session });
+
                 // Get user role and redirect accordingly
-                const userRole = await auth.getUserRole();
+                const userRole = await AuthService.getUserRole();
+                console.log('User role:', userRole);
                 
                 if (userRole === 'admin') {
                     // Redirect to admin dashboard
@@ -232,12 +305,13 @@
                     // Redirect to company dashboard
                     window.location.href = 'dashboard.html';
                 } else {
+                    console.error('Unknown user role:', userRole);
                     showError('نوع المستخدم غير محدد. يرجى الاتصال بالدعم الفني');
                 }
                 
             } catch (error) {
                 console.error('Login error:', error);
-                showError('حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى');
+                showError('حدث خطأ غير متوقع: ' + error.message);
             } finally {
                 showLoading(false);
             }
@@ -245,14 +319,21 @@
 
         // Check if user is already logged in
         window.addEventListener('load', async function() {
-            const currentUser = await auth.getCurrentUser();
-            if (currentUser) {
-                const userRole = await auth.getUserRole();
-                if (userRole === 'admin') {
-                    window.location.href = 'admin-dashboard.html';
-                } else if (userRole === 'company') {
-                    window.location.href = 'dashboard.html';
+            try {
+                const currentUser = await AuthService.getCurrentUser();
+                if (currentUser) {
+                    console.log('User already logged in:', currentUser);
+                    const userRole = await AuthService.getUserRole();
+                    console.log('Current user role:', userRole);
+                    
+                    if (userRole === 'admin') {
+                        window.location.href = 'admin-dashboard.html';
+                    } else if (userRole === 'company') {
+                        window.location.href = 'dashboard.html';
+                    }
                 }
+            } catch (error) {
+                console.error('Check existing session error:', error);
             }
         });
     </script>

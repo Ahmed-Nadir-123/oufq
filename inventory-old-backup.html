@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أُفُق - إدارة المخزون</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #1E293B;
+            --primary-orange: #D97706;
+            --secondary-orange: #D9882E;
+            --accent-blue: #344663;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --border-gray: #e9ecef;
+            --danger-red: #dc3545;
+            --success-green: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #ffffff 100%);
+            min-height: 100vh;
+            color: var(--primary-dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-content img {
+            width: 50px;
+            height: auto;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary-orange);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-orange);
+        }
+
+        .btn-back {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        .search-bar {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 16px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-orange);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        th {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: var(--light-gray);
+        }
+
+        tbody tr.low-stock {
+            background: #fff5f5;
+            border-right: 4px solid var(--danger-red);
+        }
+
+        tbody tr.low-stock:hover {
+            background: #ffe5e5;
+        }
+
+        .low-stock-badge {
+            background: var(--danger-red);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            margin: 0 3px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-orange);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: var(--border-gray);
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--primary-orange);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <img src="iconWithArabic (2).svg" alt="OFOQ Logo">
+                <div class="header-title">
+                    <i class="fas fa-boxes"></i> إدارة المخزون
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-success" onclick="window.location.href='qr-generator.html'">
+                    <i class="fas fa-qrcode"></i> إنشاء رموز QR
+                </button>
+                <button class="btn btn-primary" onclick="openAddModal()">
+                    <i class="fas fa-plus"></i> إضافة منتج
+                </button>
+                <button class="btn btn-back" onclick="window.location.href='accounting.html'">
+                    <i class="fas fa-arrow-right"></i> العودة
+                </button>
+            </div>
+        </div>
+
+        <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="بحث برمز المنتج أو الاسم...">
+        </div>
+
+        <div class="table-container">
+            <table id="inventoryTable">
+                <thead>
+                    <tr>
+                        <th>رمز المنتج</th>
+                        <th>اسم المنتج</th>
+                        <th>سعر الشراء (ر.ع)</th>
+                        <th>سعر البيع (ر.ع)</th>
+                        <th>الكمية</th>
+                        <th>الحد الأدنى</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="inventoryBody">
+                    <tr>
+                        <td colspan="8" class="loading">
+                            <i class="fas fa-spinner fa-spin"></i> جاري التحميل...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">إضافة منتج جديد</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="productForm">
+                <div class="form-group">
+                    <label class="form-label">رمز المنتج *</label>
+                    <input type="text" class="form-input" id="productCode" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">اسم المنتج *</label>
+                    <input type="text" class="form-input" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">سعر الشراء (ر.ع) *</label>
+                    <input type="number" step="0.001" class="form-input" id="purchasePrice" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">سعر البيع (ر.ع) *</label>
+                    <input type="number" step="0.001" class="form-input" id="sellingPrice" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الكمية *</label>
+                    <input type="number" class="form-input" id="totalQuantity" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">الحد الأدنى للتنبيه *</label>
+                    <input type="number" class="form-input" id="minQuantity" value="10" required>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-save"></i> حفظ
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Refill Modal -->
+    <div class="modal" id="refillModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">تعبئة المخزون</h2>
+                <button class="close-btn" onclick="closeRefillModal()">&times;</button>
+            </div>
+            <div style="margin-bottom: 20px;">
+                <p><strong>المنتج:</strong> <span id="refillProductName"></span></p>
+                <p><strong>الكمية الحالية:</strong> <span id="refillCurrentQty"></span></p>
+            </div>
+            <form id="refillForm">
+                <div class="form-group">
+                    <label class="form-label">الكمية المضافة *</label>
+                    <input type="number" class="form-input" id="refillQuantity" min="1" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">ملاحظات</label>
+                    <input type="text" class="form-input" id="refillNotes" placeholder="سبب التعبئة...">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success" style="width: 100%;">
+                        <i class="fas fa-plus"></i> تعبئة
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase
+        const { createClient } = supabase;
+        const SUPABASE_URL = 'https://wlnukwaecpkhxomfgxni.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsbnVrd2FlY3BraHhvbWZneG5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2NDc4MjEsImV4cCI6MjA3NDIyMzgyMX0.PW3GVs3l15oBIa8rS86offziTFkSVefj5OFUc6XRmoA';
+        
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentUser = null;
+        let editingProductId = null;
+        let refillProductId = null;
+        let allProducts = [];
+
+        // Initialize page
+        window.addEventListener('load', async function() {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const { data: profile } = await supabaseClient
+                    .from('user_profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (!profile || profile.role !== 'company') {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = user;
+                await loadInventory();
+            } catch (error) {
+                console.error('Load error:', error);
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Load inventory
+        async function loadInventory() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('inventory')
+                    .select('*')
+                    .eq('company_id', currentUser.id)
+                    .order('is_low_stock', { ascending: false })
+                    .order('product_code', { ascending: true });
+
+                if (error) throw error;
+
+                allProducts = data || [];
+                renderInventory(allProducts);
+            } catch (error) {
+                console.error('Load inventory error:', error);
+                alert('خطأ في تحميل المخزون: ' + error.message);
+            }
+        }
+
+        // Render inventory
+        function renderInventory(products) {
+            const tbody = document.getElementById('inventoryBody');
+            
+            if (!products || products.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <i class="fas fa-boxes"></i>
+                            <p>لا توجد منتجات في المخزون</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = products.map(product => {
+                const isLowStock = product.is_low_stock;
+                const rowClass = isLowStock ? 'low-stock' : '';
+                const statusBadge = isLowStock 
+                    ? '<span class="low-stock-badge"><i class="fas fa-exclamation-triangle"></i> منخفض</span>' 
+                    : '<span style="color: var(--success-green);"><i class="fas fa-check-circle"></i> متوفر</span>';
+
+                return `
+                    <tr class="${rowClass}">
+                        <td><strong>${product.product_code}</strong></td>
+                        <td>${product.product_name}</td>
+                        <td>${parseFloat(product.purchase_price).toFixed(3)}</td>
+                        <td>${parseFloat(product.selling_price).toFixed(3)}</td>
+                        <td><strong>${product.total_quantity}</strong></td>
+                        <td>${product.min_quantity_alert}</td>
+                        <td>${statusBadge}</td>
+                        <td>
+                            <button class="btn btn-success btn-sm" onclick="openRefillModal('${product.id}')">
+                                <i class="fas fa-plus"></i> تعبئة
+                            </button>
+                            <button class="btn btn-primary btn-sm" onclick="editProduct('${product.id}')">
+                                <i class="fas fa-edit"></i> تعديل
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteProduct('${product.id}')">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const filtered = allProducts.filter(p => 
+                p.product_code.toLowerCase().includes(searchTerm) ||
+                p.product_name.toLowerCase().includes(searchTerm)
+            );
+            renderInventory(filtered);
+        });
+
+        // Open add modal
+        function openAddModal() {
+            editingProductId = null;
+            document.getElementById('modalTitle').textContent = 'إضافة منتج جديد';
+            document.getElementById('productForm').reset();
+            document.getElementById('productCode').disabled = false;
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        // Edit product
+        function editProduct(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            editingProductId = productId;
+            document.getElementById('modalTitle').textContent = 'تعديل المنتج';
+            document.getElementById('productCode').value = product.product_code;
+            document.getElementById('productCode').disabled = true;
+            document.getElementById('productName').value = product.product_name;
+            document.getElementById('purchasePrice').value = product.purchase_price;
+            document.getElementById('sellingPrice').value = product.selling_price;
+            document.getElementById('totalQuantity').value = product.total_quantity;
+            document.getElementById('minQuantity').value = product.min_quantity_alert;
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('productModal').classList.remove('active');
+            document.getElementById('productForm').reset();
+            editingProductId = null;
+        }
+
+        // Save product
+        document.getElementById('productForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const productData = {
+                company_id: currentUser.id,
+                product_code: document.getElementById('productCode').value.trim(),
+                product_name: document.getElementById('productName').value.trim(),
+                purchase_price: parseFloat(document.getElementById('purchasePrice').value),
+                selling_price: parseFloat(document.getElementById('sellingPrice').value),
+                total_quantity: parseInt(document.getElementById('totalQuantity').value),
+                min_quantity_alert: parseInt(document.getElementById('minQuantity').value)
+            };
+
+            try {
+                if (editingProductId) {
+                    // Update
+                    const { error } = await supabaseClient
+                        .from('inventory')
+                        .update(productData)
+                        .eq('id', editingProductId);
+
+                    if (error) throw error;
+                    alert('تم تحديث المنتج بنجاح!');
+                } else {
+                    // Insert
+                    const { error } = await supabaseClient
+                        .from('inventory')
+                        .insert([productData]);
+
+                    if (error) throw error;
+                    alert('تم إضافة المنتج بنجاح!');
+                }
+
+                closeModal();
+                await loadInventory();
+            } catch (error) {
+                console.error('Save product error:', error);
+                alert('خطأ في حفظ المنتج: ' + error.message);
+            }
+        });
+
+        // Delete product
+        async function deleteProduct(productId) {
+            if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('inventory')
+                    .delete()
+                    .eq('id', productId);
+
+                if (error) throw error;
+
+                alert('تم حذف المنتج بنجاح!');
+                await loadInventory();
+            } catch (error) {
+                console.error('Delete product error:', error);
+                alert('خطأ في حذف المنتج: ' + error.message);
+            }
+        }
+
+        // Open refill modal
+        function openRefillModal(productId) {
+            const product = allProducts.find(p => p.id === productId);
+            if (!product) return;
+
+            refillProductId = productId;
+            document.getElementById('refillProductName').textContent = product.product_name;
+            document.getElementById('refillCurrentQty').textContent = product.total_quantity;
+            document.getElementById('refillForm').reset();
+            document.getElementById('refillModal').classList.add('active');
+        }
+
+        // Close refill modal
+        function closeRefillModal() {
+            document.getElementById('refillModal').classList.remove('active');
+            document.getElementById('refillForm').reset();
+            refillProductId = null;
+        }
+
+        // Refill product
+        document.getElementById('refillForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const product = allProducts.find(p => p.id === refillProductId);
+            if (!product) return;
+
+            const addedQty = parseInt(document.getElementById('refillQuantity').value);
+            const notes = document.getElementById('refillNotes').value.trim();
+            const newQty = product.total_quantity + addedQty;
+
+            try {
+                // Update inventory
+                const { error: updateError } = await supabaseClient
+                    .from('inventory')
+                    .update({ total_quantity: newQty })
+                    .eq('id', refillProductId);
+
+                if (updateError) throw updateError;
+
+                // Log transaction
+                const { error: logError } = await supabaseClient
+                    .from('inventory_transactions')
+                    .insert([{
+                        company_id: currentUser.id,
+                        product_code: product.product_code,
+                        transaction_type: 'refill',
+                        quantity: addedQty,
+                        previous_quantity: product.total_quantity,
+                        new_quantity: newQty,
+                        notes: notes || 'تعبئة مخزون'
+                    }]);
+
+                if (logError) throw logError;
+
+                alert('تم تعبئة المخزون بنجاح!');
+                closeRefillModal();
+                await loadInventory();
+            } catch (error) {
+                console.error('Refill error:', error);
+                alert('خطأ في تعبئة المخزون: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أُفُق - فاتورة شراء</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #1E293B;
+            --primary-orange: #D97706;
+            --secondary-orange: #D9882E;
+            --accent-blue: #344663;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --border-gray: #e9ecef;
+            --danger-red: #dc3545;
+            --success-green: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #ffffff 100%);
+            min-height: 100vh;
+            color: var(--primary-dark);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-content img {
+            width: 50px;
+            height: auto;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-back {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-primary {
+            background: var(--primary-orange);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-orange);
+        }
+
+        .items-section {
+            margin-top: 30px;
+        }
+
+        .item-entry {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: end;
+        }
+
+        .items-list {
+            margin-top: 20px;
+        }
+
+        .item-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 10px;
+            padding: 15px;
+            background: var(--light-gray);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .summary-section {
+            background: var(--light-gray);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .summary-total {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            padding-top: 15px;
+            border-top: 2px solid var(--border-gray);
+        }
+
+        .actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .actions button {
+            flex: 1;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <img src="iconWithArabic (2).svg" alt="OFOQ Logo">
+                <div class="header-title">
+                    <i class="fas fa-file-invoice"></i> فاتورة شراء جديدة
+                </div>
+            </div>
+            <button class="btn btn-back" onclick="goBack()">
+                <i class="fas fa-arrow-right"></i> العودة
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-info-circle"></i> معلومات الفاتورة
+            </div>
+
+            <form id="invoiceForm">
+                <div class="form-group">
+                    <label class="form-label">حالة الدفع *</label>
+                    <select class="form-select" id="paymentStatus" required>
+                        <option value="paid">مدفوع</option>
+                        <option value="pending">معلق</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">ملاحظات</label>
+                    <input type="text" class="form-input" id="notes" placeholder="ملاحظات اختيارية...">
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="card-title">
+                <i class="fas fa-boxes"></i> المنتجات
+            </div>
+
+            <div class="items-section">
+                <div class="item-entry">
+                    <div>
+                        <label class="form-label">رمز المنتج *</label>
+                        <input type="text" class="form-input" id="productCode" placeholder="أدخل رمز المنتج">
+                    </div>
+                    <div>
+                        <label class="form-label">الكمية *</label>
+                        <input type="number" class="form-input" id="quantity" min="1" placeholder="الكمية">
+                    </div>
+                    <div>
+                        <label class="form-label">سعر الوحدة (ر.ع) *</label>
+                        <input type="number" step="0.001" class="form-input" id="unitPrice" placeholder="السعر">
+                    </div>
+                    <div>
+                        <label class="form-label">&nbsp;</label>
+                        <button type="button" class="btn btn-primary" onclick="addItem()" style="width: 100%;">
+                            <i class="fas fa-plus"></i> إضافة
+                        </button>
+                    </div>
+                </div>
+
+                <div class="items-list" id="itemsList">
+                    <div class="empty-state">
+                        <i class="fas fa-boxes" style="font-size: 48px; color: var(--border-gray);"></i>
+                        <p>لم يتم إضافة منتجات بعد</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-section" id="summary" style="display: none;">
+                <div class="summary-row">
+                    <span>عدد المنتجات:</span>
+                    <span id="itemCount">0</span>
+                </div>
+                <div class="summary-row summary-total">
+                    <span>الإجمالي:</span>
+                    <span id="totalAmount">0.000 ر.ع</span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="btn btn-back" onclick="goBack()">
+                    <i class="fas fa-times"></i> إلغاء
+                </button>
+                <button class="btn btn-success" id="saveBtn" onclick="saveInvoice()" disabled>
+                    <i class="fas fa-save"></i> حفظ الفاتورة
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase
+        const { createClient } = supabase;
+        const SUPABASE_URL = 'https://wlnukwaecpkhxomfgxni.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsbnVrd2FlY3BraHhvbWZneG5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2NDc4MjEsImV4cCI6MjA3NDIyMzgyMX0.PW3GVs3l15oBIa8rS86offziTFkSVefj5OFUc6XRmoA';
+        
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentUser = null;
+        let items = [];
+
+        // Initialize page
+        window.addEventListener('load', async function() {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const { data: profile } = await supabaseClient
+                    .from('user_profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (!profile || profile.role !== 'company') {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = user;
+            } catch (error) {
+                console.error('Load error:', error);
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Add item
+        async function addItem() {
+            const productCode = document.getElementById('productCode').value.trim();
+            const quantity = parseInt(document.getElementById('quantity').value);
+            const unitPrice = parseFloat(document.getElementById('unitPrice').value);
+
+            if (!productCode || !quantity || !unitPrice) {
+                alert('الرجاء إدخال جميع بيانات المنتج');
+                return;
+            }
+
+            try {
+                // Verify product exists in inventory
+                const { data: product, error } = await supabaseClient
+                    .from('inventory')
+                    .select('product_name')
+                    .eq('company_id', currentUser.id)
+                    .eq('product_code', productCode)
+                    .single();
+
+                if (error || !product) {
+                    alert('المنتج غير موجود في المخزون. الرجاء إضافته أولاً.');
+                    return;
+                }
+
+                items.push({
+                    product_code: productCode,
+                    product_name: product.product_name,
+                    quantity: quantity,
+                    unit_price: unitPrice,
+                    subtotal: quantity * unitPrice
+                });
+
+                // Clear inputs
+                document.getElementById('productCode').value = '';
+                document.getElementById('quantity').value = '';
+                document.getElementById('unitPrice').value = '';
+
+                renderItems();
+            } catch (error) {
+                console.error('Add item error:', error);
+                alert('خطأ في إضافة المنتج: ' + error.message);
+            }
+        }
+
+        // Render items
+        function renderItems() {
+            const itemsList = document.getElementById('itemsList');
+            
+            if (items.length === 0) {
+                itemsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-boxes" style="font-size: 48px; color: var(--border-gray);"></i>
+                        <p>لم يتم إضافة منتجات بعد</p>
+                    </div>
+                `;
+                document.getElementById('summary').style.display = 'none';
+                document.getElementById('saveBtn').disabled = true;
+                return;
+            }
+
+            itemsList.innerHTML = items.map((item, index) => `
+                <div class="item-row">
+                    <div>
+                        <strong>${item.product_name}</strong><br>
+                        <small style="color: #666;">${item.product_code}</small>
+                    </div>
+                    <div>${item.quantity}</div>
+                    <div>${item.unit_price.toFixed(3)} ر.ع</div>
+                    <div><strong>${item.subtotal.toFixed(3)} ر.ع</strong></div>
+                    <div>
+                        <button class="btn btn-danger btn-sm" onclick="removeItem(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Update summary
+            const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+            document.getElementById('itemCount').textContent = items.length;
+            document.getElementById('totalAmount').textContent = total.toFixed(3) + ' ر.ع';
+            document.getElementById('summary').style.display = 'block';
+            document.getElementById('saveBtn').disabled = false;
+        }
+
+        // Remove item
+        function removeItem(index) {
+            items.splice(index, 1);
+            renderItems();
+        }
+
+        // Save invoice
+        async function saveInvoice() {
+            if (items.length === 0) {
+                alert('الرجاء إضافة منتجات للفاتورة');
+                return;
+            }
+
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+
+            try {
+                const paymentStatus = document.getElementById('paymentStatus').value;
+                const notes = document.getElementById('notes').value.trim();
+                const totalAmount = items.reduce((sum, item) => sum + item.subtotal, 0);
+
+                // Generate invoice number
+                const invoiceNumber = 'INV-PURCHASE-' + new Date().toISOString().slice(0,10).replace(/-/g, '') + '-' + Math.random().toString(36).substring(7).toUpperCase();
+
+                // Create invoice
+                const { data: invoice, error: invoiceError } = await supabaseClient
+                    .from('invoices')
+                    .insert([{
+                        company_id: currentUser.id,
+                        invoice_number: invoiceNumber,
+                        invoice_type: 'purchase',
+                        total_amount: totalAmount,
+                        payment_status: paymentStatus,
+                        notes: notes || null
+                    }])
+                    .select()
+                    .single();
+
+                if (invoiceError) throw invoiceError;
+
+                // Create invoice items
+                const invoiceItemsData = items.map(item => ({
+                    invoice_id: invoice.id,
+                    product_code: item.product_code,
+                    product_name: item.product_name,
+                    quantity: item.quantity,
+                    unit_price: item.unit_price,
+                    subtotal: item.subtotal
+                }));
+
+                const { error: itemsError } = await supabaseClient
+                    .from('invoice_items')
+                    .insert(invoiceItemsData);
+
+                if (itemsError) throw itemsError;
+
+                // Update inventory quantities (add purchased items)
+                for (const item of items) {
+                    const { data: inventory, error: invError } = await supabaseClient
+                        .from('inventory')
+                        .select('total_quantity')
+                        .eq('company_id', currentUser.id)
+                        .eq('product_code', item.product_code)
+                        .single();
+
+                    if (invError) throw invError;
+
+                    const newQuantity = inventory.total_quantity + item.quantity;
+
+                    const { error: updateError } = await supabaseClient
+                        .from('inventory')
+                        .update({ total_quantity: newQuantity })
+                        .eq('company_id', currentUser.id)
+                        .eq('product_code', item.product_code);
+
+                    if (updateError) throw updateError;
+
+                    // Log transaction
+                    await supabaseClient
+                        .from('inventory_transactions')
+                        .insert([{
+                            company_id: currentUser.id,
+                            product_code: item.product_code,
+                            transaction_type: 'purchase',
+                            quantity: item.quantity,
+                            previous_quantity: inventory.total_quantity,
+                            new_quantity: newQuantity,
+                            reference_id: invoice.id,
+                            notes: `شراء - ${invoiceNumber}`
+                        }]);
+                }
+
+                alert('تم حفظ الفاتورة بنجاح!\nرقم الفاتورة: ' + invoiceNumber);
+                window.location.href = 'invoices.html';
+
+            } catch (error) {
+                console.error('Save invoice error:', error);
+                alert('خطأ في حفظ الفاتورة: ' + error.message);
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save"></i> حفظ الفاتورة';
+            }
+        }
+
+        function goBack() {
+            if (items.length > 0) {
+                if (confirm('هل أنت متأكد من الإلغاء؟ سيتم فقدان البيانات المدخلة.')) {
+                    window.location.href = 'invoices.html';
+                }
+            } else {
+                window.location.href = 'invoices.html';
+            }
+        }
+    </script>
+</body>
+</html>

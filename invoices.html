@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أُفُق - الفواتير</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-dark: #1E293B;
+            --primary-orange: #D97706;
+            --secondary-orange: #D9882E;
+            --accent-blue: #344663;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --border-gray: #e9ecef;
+            --danger-red: #dc3545;
+            --success-green: #28a745;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, var(--light-gray) 0%, #ffffff 100%);
+            min-height: 100vh;
+            color: var(--primary-dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-content img {
+            width: 50px;
+            height: auto;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: var(--primary-orange);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--secondary-orange);
+        }
+
+        .btn-back {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger-red);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+            margin: 0 3px;
+        }
+
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-dark);
+            font-size: 14px;
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--primary-orange);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: right;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        th {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: var(--light-gray);
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-sale {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-purchase {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: var(--border-gray);
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: var(--primary-orange);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .invoice-details {
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border-gray);
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #666;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--primary-dark);
+        }
+
+        .items-table {
+            margin-top: 20px;
+        }
+
+        .print-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .modal-content, .modal-content * {
+                visibility: visible;
+            }
+            .modal-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+            }
+            .close-btn, .print-section {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <img src="iconWithArabic (2).svg" alt="OFOQ Logo">
+                <div class="header-title">
+                    <i class="fas fa-file-invoice"></i> الفواتير
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="window.location.href='invoice-form.html'">
+                    <i class="fas fa-plus"></i> فاتورة شراء يدوية
+                </button>
+                <button class="btn btn-back" onclick="window.location.href='accounting.html'">
+                    <i class="fas fa-arrow-right"></i> العودة
+                </button>
+            </div>
+        </div>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label class="filter-label">البحث برقم الفاتورة</label>
+                <input type="text" class="filter-input" id="searchInput" placeholder="رقم الفاتورة...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">نوع الفاتورة</label>
+                <select class="filter-input" id="typeFilter">
+                    <option value="">الكل</option>
+                    <option value="sale">بيع</option>
+                    <option value="purchase">شراء</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">حالة الدفع</label>
+                <select class="filter-input" id="statusFilter">
+                    <option value="">الكل</option>
+                    <option value="paid">مدفوع</option>
+                    <option value="pending">معلق</option>
+                    <option value="cancelled">ملغي</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <table id="invoicesTable">
+                <thead>
+                    <tr>
+                        <th>رقم الفاتورة</th>
+                        <th>النوع</th>
+                        <th>المبلغ (ر.ع)</th>
+                        <th>حالة الدفع</th>
+                        <th>التاريخ</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="invoicesBody">
+                    <tr>
+                        <td colspan="6" class="loading">
+                            <i class="fas fa-spinner fa-spin"></i> جاري التحميل...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Invoice Details Modal -->
+    <div class="modal" id="invoiceModal">
+        <div class="modal-content" id="invoiceContent">
+            <div class="modal-header">
+                <h2 class="modal-title">تفاصيل الفاتورة</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="invoiceDetailsContent"></div>
+            <div class="print-section">
+                <button class="btn btn-primary" onclick="printInvoice()">
+                    <i class="fas fa-print"></i> طباعة
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // Initialize Supabase
+        const { createClient } = supabase;
+        const SUPABASE_URL = 'https://wlnukwaecpkhxomfgxni.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsbnVrd2FlY3BraHhvbWZneG5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2NDc4MjEsImV4cCI6MjA3NDIyMzgyMX0.PW3GVs3l15oBIa8rS86offziTFkSVefj5OFUc6XRmoA';
+        
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentUser = null;
+        let allInvoices = [];
+
+        // Initialize page
+        window.addEventListener('load', async function() {
+            try {
+                const { data: { user } } = await supabaseClient.auth.getUser();
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                const { data: profile } = await supabaseClient
+                    .from('user_profiles')
+                    .select('role')
+                    .eq('id', user.id)
+                    .single();
+
+                if (!profile || profile.role !== 'company') {
+                    window.location.href = 'login.html';
+                    return;
+                }
+
+                currentUser = user;
+                await loadInvoices();
+
+                // Add filter listeners
+                document.getElementById('searchInput').addEventListener('input', applyFilters);
+                document.getElementById('typeFilter').addEventListener('change', applyFilters);
+                document.getElementById('statusFilter').addEventListener('change', applyFilters);
+            } catch (error) {
+                console.error('Load error:', error);
+                window.location.href = 'login.html';
+            }
+        });
+
+        // Load invoices
+        async function loadInvoices() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('invoices')
+                    .select('*')
+                    .eq('company_id', currentUser.id)
+                    .order('invoice_date', { ascending: false });
+
+                if (error) throw error;
+
+                allInvoices = data || [];
+                renderInvoices(allInvoices);
+            } catch (error) {
+                console.error('Load invoices error:', error);
+                alert('خطأ في تحميل الفواتير: ' + error.message);
+            }
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const typeFilter = document.getElementById('typeFilter').value;
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            const filtered = allInvoices.filter(invoice => {
+                const matchSearch = invoice.invoice_number.toLowerCase().includes(searchTerm);
+                const matchType = !typeFilter || invoice.invoice_type === typeFilter;
+                const matchStatus = !statusFilter || invoice.payment_status === statusFilter;
+                return matchSearch && matchType && matchStatus;
+            });
+
+            renderInvoices(filtered);
+        }
+
+        // Render invoices
+        function renderInvoices(invoices) {
+            const tbody = document.getElementById('invoicesBody');
+            
+            if (!invoices || invoices.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-file-invoice"></i>
+                            <p>لا توجد فواتير</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = invoices.map(invoice => {
+                const typeBadge = invoice.invoice_type === 'sale' 
+                    ? '<span class="badge badge-sale">بيع</span>'
+                    : '<span class="badge badge-purchase">شراء</span>';
+
+                const statusBadge = invoice.payment_status === 'paid'
+                    ? '<span class="badge badge-paid">مدفوع</span>'
+                    : invoice.payment_status === 'pending'
+                    ? '<span class="badge badge-pending">معلق</span>'
+                    : '<span class="badge badge-cancelled">ملغي</span>';
+
+                const invoiceDate = new Date(invoice.invoice_date).toLocaleDateString('ar-SA', {
+                    calendar: 'gregory',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                return `
+                    <tr>
+                        <td><strong>${invoice.invoice_number}</strong></td>
+                        <td>${typeBadge}</td>
+                        <td>${parseFloat(invoice.total_amount).toFixed(3)}</td>
+                        <td>${statusBadge}</td>
+                        <td>${invoiceDate}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="viewInvoice('${invoice.id}')">
+                                <i class="fas fa-eye"></i> عرض
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteInvoice('${invoice.id}')">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // View invoice
+        async function viewInvoice(invoiceId) {
+            try {
+                // Get invoice
+                const { data: invoice, error: invError } = await supabaseClient
+                    .from('invoices')
+                    .select('*')
+                    .eq('id', invoiceId)
+                    .single();
+
+                if (invError) throw invError;
+
+                // Get items
+                const { data: items, error: itemsError } = await supabaseClient
+                    .from('invoice_items')
+                    .select('*')
+                    .eq('invoice_id', invoiceId);
+
+                if (itemsError) throw itemsError;
+
+                // Render details
+                const typeText = invoice.invoice_type === 'sale' ? 'بيع' : 'شراء';
+                const statusText = invoice.payment_status === 'paid' ? 'مدفوع' : invoice.payment_status === 'pending' ? 'معلق' : 'ملغي';
+                const invoiceDate = new Date(invoice.invoice_date).toLocaleDateString('ar-SA', {
+                    calendar: 'gregory',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                let detailsHTML = `
+                    <div class="invoice-details">
+                        <div class="detail-row">
+                            <span class="detail-label">رقم الفاتورة:</span>
+                            <span class="detail-value">${invoice.invoice_number}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">النوع:</span>
+                            <span class="detail-value">${typeText}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">التاريخ:</span>
+                            <span class="detail-value">${invoiceDate}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">حالة الدفع:</span>
+                            <span class="detail-value">${statusText}</span>
+                        </div>
+                        ${invoice.notes ? `
+                        <div class="detail-row">
+                            <span class="detail-label">ملاحظات:</span>
+                            <span class="detail-value">${invoice.notes}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="items-table">
+                        <h3 style="margin-bottom: 15px;">المنتجات</h3>
+                        <table style="width: 100%;">
+                            <thead>
+                                <tr style="background: var(--light-gray);">
+                                    <th>المنتج</th>
+                                    <th>الكمية</th>
+                                    <th>السعر</th>
+                                    <th>المجموع</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${items.map(item => `
+                                    <tr>
+                                        <td>
+                                            <strong>${item.product_name}</strong><br>
+                                            <small style="color: #666;">${item.product_code}</small>
+                                        </td>
+                                        <td>${item.quantity}</td>
+                                        <td>${parseFloat(item.unit_price).toFixed(3)} ر.ع</td>
+                                        <td><strong>${parseFloat(item.subtotal).toFixed(3)} ر.ع</strong></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="detail-row" style="margin-top: 20px; font-size: 18px; border-top: 2px solid var(--primary-dark); padding-top: 15px;">
+                        <span class="detail-label">الإجمالي النهائي:</span>
+                        <span class="detail-value" style="color: var(--primary-orange);">${parseFloat(invoice.total_amount).toFixed(3)} ر.ع</span>
+                    </div>
+                `;
+
+                document.getElementById('invoiceDetailsContent').innerHTML = detailsHTML;
+                document.getElementById('invoiceModal').classList.add('active');
+            } catch (error) {
+                console.error('View invoice error:', error);
+                alert('خطأ في عرض الفاتورة: ' + error.message);
+            }
+        }
+
+        // Close modal
+        function closeModal() {
+            document.getElementById('invoiceModal').classList.remove('active');
+        }
+
+        // Print invoice
+        function printInvoice() {
+            window.print();
+        }
+
+        // Delete invoice
+        async function deleteInvoice(invoiceId) {
+            if (!confirm('هل أنت متأكد من حذف هذه الفاتورة؟')) return;
+
+            try {
+                const { error } = await supabaseClient
+                    .from('invoices')
+                    .delete()
+                    .eq('id', invoiceId);
+
+                if (error) throw error;
+
+                alert('تم حذف الفاتورة بنجاح!');
+                await loadInvoices();
+            } catch (error) {
+                console.error('Delete invoice error:', error);
+                alert('خطأ في حذف الفاتورة: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
