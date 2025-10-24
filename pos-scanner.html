@@ -402,22 +402,20 @@
             const qrConfig = {
                 fps: 10,
                 qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.0,
-                formatsToSupport: [
-                    Html5QrcodeSupportedFormats.QR_CODE,
-                    Html5QrcodeSupportedFormats.CODE_128,
-                    Html5QrcodeSupportedFormats.CODE_39,
-                    Html5QrcodeSupportedFormats.EAN_13,
-                    Html5QrcodeSupportedFormats.EAN_8
-                ]
+                aspectRatio: 1.0
             };
+            
+            console.log('Starting scanner...');
             
             html5QrCode.start(
                 { facingMode: "environment" },
                 qrConfig,
                 onScanSuccess,
                 onScanFailure
-            ).catch(err => {
+            ).then(() => {
+                console.log('Scanner started successfully!');
+                showAlert('الماسح الضوئي جاهز!', 'success');
+            }).catch(err => {
                 console.error("Camera error:", err);
                 showAlert('تعذر الوصول للكاميرا. استخدم الإدخال اليدوي.', 'error');
             });
@@ -428,21 +426,28 @@
         let lastScanTime = 0;
         
         async function onScanSuccess(decodedText, decodedResult) {
+            console.log('✅ SCAN SUCCESS!');
+            console.log('Decoded text:', decodedText);
+            console.log('Full result:', decodedResult);
+            
             // Prevent duplicate scans within 2 seconds
             const now = Date.now();
             if (decodedText === lastScannedCode && (now - lastScanTime) < 2000) {
+                console.log('⏭️ Duplicate scan ignored');
                 return;
             }
             
             lastScannedCode = decodedText;
             lastScanTime = now;
             
-            console.log('Scanned code:', decodedText);
+            console.log('🔍 Scanned code:', decodedText);
             await addProductToCart(decodedText);
         }
 
         function onScanFailure(error) {
             // Silent - scanning continuously
+            // Uncomment below to see scan failures (very verbose)
+            // console.log('Scan attempt:', error);
         }
 
         // Add product to cart
