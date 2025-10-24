@@ -463,8 +463,11 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
     <script>
+        // Wait for QRCode library to load
+        console.log('qrcode library status:', typeof qrcode !== 'undefined' ? 'Loaded' : 'Not loaded');
+        
         // Initialize Supabase
         const { createClient } = supabase;
         const SUPABASE_URL = 'https://wlnukwaecpkhxomfgxni.supabase.co';
@@ -597,51 +600,60 @@
             // Get canvas
             const canvas = document.getElementById('qrCanvas');
             
-            // Generate QR code using standard library
+            // Check if qrcode library is loaded
+            if (typeof qrcode === 'undefined') {
+                alert('مكتبة QR Code لم يتم تحميلها بعد. الرجاء الانتظار والمحاولة مرة أخرى.');
+                console.error('qrcode library not loaded');
+                return;
+            }
+            
+            // Generate QR code using qrcode-generator library
             try {
-                QRCode.toCanvas(canvas, product.product_code, {
-                    width: 280,
-                    margin: 2,
-                    color: {
-                        dark: '#1E293B',
-                        light: '#FFFFFF'
-                    },
-                    errorCorrectionLevel: 'M'
-                }, function (error) {
-                    if (error) {
-                        console.error('QR generation error:', error);
-                    } else {
-                        console.log('QR Code generated successfully');
-                        
-                        // Add product code text below QR code
-                        const ctx = canvas.getContext('2d');
-                        const originalHeight = canvas.height;
-                        const textHeight = 30;
-                        
-                        // Create temp canvas to preserve QR code
-                        const tempCanvas = document.createElement('canvas');
-                        tempCanvas.width = canvas.width;
-                        tempCanvas.height = originalHeight;
-                        const tempCtx = tempCanvas.getContext('2d');
-                        tempCtx.drawImage(canvas, 0, 0);
-                        
-                        // Extend canvas height
-                        canvas.height = originalHeight + textHeight;
-                        
-                        // Redraw QR code
-                        ctx.fillStyle = '#FFFFFF';
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(tempCanvas, 0, 0);
-                        
-                        // Add text
-                        ctx.fillStyle = '#1E293B';
-                        ctx.font = 'bold 16px Arial';
-                        ctx.textAlign = 'center';
-                        ctx.fillText(product.product_code, canvas.width / 2, originalHeight + 20);
+                const qr = qrcode(0, 'M'); // Type 0 (auto), Error correction level M
+                qr.addData(product.product_code);
+                qr.make();
+                
+                const moduleCount = qr.getModuleCount();
+                const cellSize = 10; // Size of each QR module in pixels
+                const margin = 20;
+                const qrSize = moduleCount * cellSize + margin * 2;
+                const textHeight = 35;
+                
+                // Set canvas size
+                canvas.width = qrSize;
+                canvas.height = qrSize + textHeight;
+                
+                const ctx = canvas.getContext('2d');
+                
+                // Fill white background
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw QR code
+                ctx.fillStyle = '#1E293B';
+                for (let row = 0; row < moduleCount; row++) {
+                    for (let col = 0; col < moduleCount; col++) {
+                        if (qr.isDark(row, col)) {
+                            ctx.fillRect(
+                                margin + col * cellSize,
+                                margin + row * cellSize,
+                                cellSize,
+                                cellSize
+                            );
+                        }
                     }
-                });
+                }
+                
+                // Add product code text at bottom
+                ctx.fillStyle = '#1E293B';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(product.product_code, canvas.width / 2, qrSize + 22);
+                
+                console.log('QR Code generated successfully');
             } catch (error) {
                 console.error('QR Error:', error);
+                alert('خطأ في إنشاء رمز QR: ' + error.message);
             }
             
             // Show modal
