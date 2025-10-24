@@ -356,24 +356,6 @@
                 description: 'إدارة المخزون، المبيعات، والفواتير',
                 icon: 'fas fa-calculator',
                 action: 'goToAccounting'
-            },
-            inventory: {
-                title: 'إدارة المخزون',
-                description: 'تتبع المواد والبضائع والمخزون',
-                icon: 'fas fa-boxes',
-                action: 'goToInventory'
-            },
-            sales: {
-                title: 'المبيعات',
-                description: 'إدارة عمليات البيع والعملاء',
-                icon: 'fas fa-chart-line',
-                action: 'goToSales'
-            },
-            invoices: {
-                title: 'الفواتير',
-                description: 'إنشاء وإدارة الفواتير والحسابات',
-                icon: 'fas fa-file-invoice',
-                action: 'goToFinancial'
             }
         };
 
@@ -454,32 +436,6 @@
         window.goToAccounting = function() {
             if (hasService('accounting')) {
                 window.location.href = 'accounting.html';
-            } else {
-                alert('هذه الخدمة غير مفعلة لشركتكم');
-            }
-        };
-
-        window.goToFinancial = function() {
-            if (hasService('invoices')) {
-                window.location.href = 'financial.html';
-            } else {
-                alert('هذه الخدمة غير مفعلة لشركتكم');
-            }
-        };
-
-        window.goToInventory = function() {
-            if (hasService('inventory')) {
-                // Create inventory page or redirect to existing one
-                alert('صفحة المخزون قيد التطوير');
-            } else {
-                alert('هذه الخدمة غير مفعلة لشركتكم');
-            }
-        };
-
-        window.goToSales = function() {
-            if (hasService('sales')) {
-                // Create sales page or redirect to existing one
-                alert('صفحة المبيعات قيد التطوير');
             } else {
                 alert('هذه الخدمة غير مفعلة لشركتكم');
             }
