@@ -313,6 +313,12 @@
                     • أو استخدم الإدخال اليدوي أدناه
                 </div>
                 
+                <!-- Debug Panel -->
+                <div id="debugPanel" style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; font-size: 11px; font-family: monospace; display: none;">
+                    <strong>🔧 حالة الماسح:</strong><br>
+                    <div id="debugLog"></div>
+                </div>
+                
                 <div class="manual-input">
                     <input type="text" class="form-input" id="manualCode" placeholder="أو أدخل رمز المنتج يدوياً...">
                     <button class="btn btn-success" onclick="addManualProduct()" style="width: 100%;">
@@ -366,6 +372,21 @@
         let currentUser = null;
         let cart = [];
         let html5QrCode = null;
+        let scanAttempts = 0;
+
+        // Debug logging function
+        function debugLog(message) {
+            console.log(message);
+            const debugPanel = document.getElementById('debugPanel');
+            const debugLogDiv = document.getElementById('debugLog');
+            debugPanel.style.display = 'block';
+            debugLogDiv.innerHTML += `${new Date().toLocaleTimeString()}: ${message}<br>`;
+            // Keep only last 5 messages
+            const lines = debugLogDiv.innerHTML.split('<br>');
+            if (lines.length > 6) {
+                debugLogDiv.innerHTML = lines.slice(-6).join('<br>');
+            }
+        }
 
         // Initialize page
         window.addEventListener('load', async function() {
@@ -397,6 +418,7 @@
 
         // Initialize QR Scanner
         function initializeScanner() {
+            debugLog('بدء تشغيل الماسح...');
             html5QrCode = new Html5Qrcode("reader");
             
             const qrConfig = {
@@ -405,7 +427,7 @@
                 aspectRatio: 1.0
             };
             
-            console.log('Starting scanner...');
+            debugLog('طلب إذن الكاميرا...');
             
             html5QrCode.start(
                 { facingMode: "environment" },
@@ -413,9 +435,10 @@
                 onScanSuccess,
                 onScanFailure
             ).then(() => {
-                console.log('Scanner started successfully!');
+                debugLog('✅ الماسح جاهز!');
                 showAlert('الماسح الضوئي جاهز!', 'success');
             }).catch(err => {
+                debugLog('❌ خطأ: ' + err.message);
                 console.error("Camera error:", err);
                 showAlert('تعذر الوصول للكاميرا. استخدم الإدخال اليدوي.', 'error');
             });
@@ -426,6 +449,7 @@
         let lastScanTime = 0;
         
         async function onScanSuccess(decodedText, decodedResult) {
+            debugLog('🎯 تم المسح: ' + decodedText);
             console.log('✅ SCAN SUCCESS!');
             console.log('Decoded text:', decodedText);
             console.log('Full result:', decodedResult);
@@ -433,6 +457,7 @@
             // Prevent duplicate scans within 2 seconds
             const now = Date.now();
             if (decodedText === lastScannedCode && (now - lastScanTime) < 2000) {
+                debugLog('⏭️ مسح مكرر - تم التجاهل');
                 console.log('⏭️ Duplicate scan ignored');
                 return;
             }
@@ -440,19 +465,21 @@
             lastScannedCode = decodedText;
             lastScanTime = now;
             
-            console.log('🔍 Scanned code:', decodedText);
             await addProductToCart(decodedText);
         }
 
         function onScanFailure(error) {
-            // Silent - scanning continuously
-            // Uncomment below to see scan failures (very verbose)
-            // console.log('Scan attempt:', error);
+            // Count scan attempts
+            scanAttempts++;
+            if (scanAttempts % 50 === 0) {
+                debugLog(`محاولة ${scanAttempts}...`);
+            }
         }
 
         // Add product to cart
         async function addProductToCart(productCode) {
             try {
+                debugLog('🔍 البحث عن: ' + productCode);
                 console.log('Searching for product:', productCode);
                 
                 // Find product in inventory
@@ -464,6 +491,7 @@
                     .single();
 
                 if (error || !product) {
+                    debugLog('❌ المنتج غير موجود');
                     console.error('Product not found:', error);
                     showAlert('المنتج غير موجود في المخزون: ' + productCode, 'error');
                     
@@ -472,6 +500,7 @@
                     return;
                 }
 
+                debugLog('✅ وجد: ' + product.product_name);
                 console.log('Product found:', product);
 
                 // Check if already in cart
