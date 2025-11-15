@@ -39,13 +39,13 @@
 
         .header {
             background: white;
-            padding: 20px;
+            padding: 5px 20px;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.08);
             margin-bottom: 30px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
+            align-items: stretch;
         }
 
         .header-content {
@@ -174,21 +174,77 @@
 <body>
     <div class="container">
         <div class="header">
-            <div class="header-content">
-                <img src="iconWithArabic (2).svg" alt="OFOQ Logo">
-                <div>
-                    <div class="header-title">
-                        <i class="fas fa-calculator"></i> المحاسبة
-                    </div>
+            <!-- First Section: Official Images Row -->
+            <div class="header-images-row" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; border-bottom: 1px solid #e9ecef;">
+                <!-- Left: Chamber Logo -->
+                <div style="display: flex; align-items: center;">
+                    <img src="Oman-Chamber-of-Commerce-and-Industry.png" alt="Chamber Logo" style="width: 140px; height: auto;">
+                </div>
+
+                <!-- Center: Sultan Images -->
+                <div style="display: flex; gap: 20px; align-items: center;">
+                    <img src="HM_Sultan_Qaboos.jpg" alt="Sultan Kaboos" style="border-radius: 50%; width: 100px; height: 100px; border: solid #1E293B 3px;">
+                    <img src="2.jpg" alt="Sultan Haitham" style="border-radius: 50%; width: 100px; height: 100px; border: solid #1E293B 3px;">
+                </div>
+
+                <!-- Right: Oman Vision Logo -->
+                <div style="display: flex; align-items: center;">
+                    <img src="OmanVision.webp" alt="Oman Vision 2040" style="width: 120px; height: auto;">
                 </div>
             </div>
-            <div class="header-actions">
-                <button class="btn btn-back" onclick="goToDashboard()">
-                    <i class="fas fa-arrow-right"></i> العودة للرئيسية
-                </button>
-                <button class="btn btn-logout" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
-                </button>
+
+            <!-- Second Section: Logo and Contact Info Row -->
+            <div class="header-info-row" style="display: flex; justify-content: space-between; align-items: center; padding: 15px 20px;">
+                <!-- Left: OFOQ Logo -->
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <img src="iconWithArabic (2).svg" alt="OFOQ Logo" style="width: 80px; height: auto;">
+                    <span style="font-size: 24px; font-weight: 700; color: var(--primary-dark);">
+                        <i class="fas fa-calculator"></i> المحاسبة
+                    </span>
+                </div>
+
+                <!-- Center: Address Info -->
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 12px; font-weight: 600; color: #1E293B; margin-bottom: 2px;">شارع غلا</div>
+                        <div style="font-size: 14px; font-weight: 700; color: #1E293B;">مسقط، عُمان</div>
+                    </div>
+                    <span style="background: #f8f9fa; border-radius: 50%; padding: 8px; margin-left: 8px;">
+                        <i class="fa fa-home" style="color: #D97706; font-size: 18px;"></i>
+                    </span>
+                </div>
+
+                <!-- Center-Right: Working Hours -->
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 12px; font-weight: 600; color: #1E293B; margin-bottom: 2px;">الأحد - الخميس</div>
+                        <div style="font-size: 14px; font-weight: 700; color: #1E293B;">9 صباحاً - 6 مساءً</div>
+                    </div>
+                    <span style="background: #f8f9fa; border-radius: 50%; padding: 8px; margin-left: 8px;">
+                        <i class="fa fa-clock" style="color: #D97706; font-size: 18px;"></i>
+                    </span>
+                </div>
+
+                <!-- Right: Contact Info & Navigation -->
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 12px; font-weight: 600; color: #1E293B; margin-bottom: 2px;">اتصل بنا الآن</div>
+                            <div style="font-size: 14px; font-weight: 700; color: #1E293B;">+968 99646799</div>
+                        </div>
+                        <span style="background: #f8f9fa; border-radius: 50%; padding: 8px; margin-left: 8px;">
+                            <i class="fa fa-phone" style="color: #D97706; font-size: 18px;"></i>
+                        </span>
+                    </div>
+                    <div class="user-info" style="display: flex; align-items: center; gap: 10px;">
+                        <button class="btn btn-back" onclick="goToDashboard()" style="padding: 8px 16px; background: var(--accent-blue); color: white; border: none; border-radius: 8px; cursor: pointer; font-family: 'Cairo', sans-serif; font-weight: 600;">
+                            <i class="fas fa-arrow-right"></i> العودة للرئيسية
+                        </button>
+                        <button class="btn btn-logout" onclick="logout()" style="padding: 8px 16px; background: var(--primary-orange); color: white; border: none; border-radius: 8px; cursor: pointer; font-family: 'Cairo', sans-serif; font-weight: 600;">
+                            <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
